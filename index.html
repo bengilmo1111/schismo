@@ -4,43 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Schismogenesis</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 8h4l3-6' stroke='%238C2F27' fill='none'/%3E%3Cpath d='M1 8h4l3 6' stroke='%231F4E79' fill='none'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
   <h1>Schismogenesis</h1>
   <p class="sub">Two parties, each reacting to the other. Bateson's question was why some
-  relationships settle and others run away with themselves. Set the couplings and watch the pens.</p>
+  relationships settle and others run away with themselves. Set the couplings, seed a small
+  difference, and watch how long it takes to become a large one.</p>
 </header>
 
 <div class="recorder">
   <canvas id="chart"></canvas>
   <div class="pens">
-    <div class="pen"><i class="nib" style="background:var(--pen-a)"></i>A <span class="val" id="va">0.60</span></div>
-    <div class="pen"><i class="nib" style="background:var(--pen-b)"></i>B <span class="val" id="vb">0.40</span></div>
-    <div class="tick">t = <span id="vt">0</span></div>
+    <div class="pen"><i class="nib" style="background:var(--pen-a)"></i><span id="namea">A</span> <span class="val" id="va">0.60</span></div>
+    <div class="pen"><i class="nib" style="background:var(--pen-b)"></i><span id="nameb">B</span> <span class="val" id="vb">0.40</span></div>
+    <div class="tick"><span id="vt">0</span> <span id="vtunit">exchanges</span></div>
   </div>
 </div>
+<p class="hint mirror" id="mirrorhint"></p>
 
 <p class="diagnosis" id="diagnosis">Press run.</p>
 
 <div class="gauges">
   <div class="gauge">
-    <h3>Joint level (A + B)</h3>
+    <h3 id="hsum">Joint level (A + B)</h3>
     <div class="num" id="gsum">1.00</div>
     <div class="state" id="ssum">&nbsp;</div>
   </div>
   <div class="gauge">
-    <h3>Role gap (A − B)</h3>
+    <h3 id="hdif">Role gap (A − B)</h3>
     <div class="num" id="gdif">0.20</div>
     <div class="state" id="sdif">&nbsp;</div>
   </div>
 </div>
 
+<section class="clock">
+  <h2 id="clockhead">How long until they are opposites</h2>
+  <p class="clockline" id="clockmain">&nbsp;</p>
+  <p class="clockline soft" id="clockseed">&nbsp;</p>
+</section>
+
 <div class="row">
   <button class="primary" id="run">Run</button>
   <button id="step">Step</button>
   <button id="reset">Reset paper</button>
+  <button id="share">Copy link to this run</button>
 </div>
 
 <fieldset>
@@ -54,42 +64,77 @@
 
   <label class="slider" id="blendWrap">
     <span class="lab"><span>Share of dominance in the mix</span><span id="lblend">50%</span></span>
-    <input type="range" id="blend" min="0" max="1" step="0.02" value="0.5">
+    <input type="range" id="blend">
   </label>
 
   <label class="slider">
-    <span class="lab"><span>A's responsiveness</span><span id="lga">0.24</span></span>
-    <input type="range" id="ga" min="0" max="0.5" step="0.01" value="0.24">
+    <span class="lab"><span><span class="who" id="ga-who">A</span>'s responsiveness</span><span id="lga">0.24</span></span>
+    <input type="range" id="ga">
   </label>
   <label class="slider">
-    <span class="lab"><span>B's responsiveness</span><span id="lgb">0.24</span></span>
-    <input type="range" id="gb" min="0" max="0.5" step="0.01" value="0.24">
+    <span class="lab"><span><span class="who" id="gb-who">B</span>'s responsiveness</span><span id="lgb">0.24</span></span>
+    <input type="range" id="gb">
   </label>
   <label class="slider">
     <span class="lab"><span>Need to go one better</span><span id="lm">0.50</span></span>
-    <input type="range" id="m" min="0" max="1.5" step="0.05" value="0.5">
+    <input type="range" id="m">
   </label>
   <label class="slider">
-    <span class="lab"><span>Restraint pulling both back</span><span id="lr">0.06</span></span>
-    <input type="range" id="r" min="0" max="0.4" step="0.01" value="0.06">
+    <span class="lab"><span>Restraint on <span class="who" id="ra-who">A</span></span><span id="lra">0.06</span></span>
+    <input type="range" id="ra">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>Restraint on <span class="who" id="rb-who">B</span></span><span id="lrb">0.06</span></span>
+    <input type="range" id="rb">
+  </label>
+  <p class="hint">Restraint is the only thing that limits how far the pair goes. Responsiveness and
+  the margin decide how fast they get there and where they stop — they never decide whether it stops.</p>
+</fieldset>
+
+<fieldset>
+  <legend>Where they start</legend>
+  <p class="hint">A runaway needs something to amplify. Seed a difference and see how much later
+  the same outcome arrives.</p>
+  <div class="row tight" id="seeds"></div>
+  <label class="slider">
+    <span class="lab"><span>Starting difference between them</span><span id="ld0">0.200</span></span>
+    <input type="range" id="d0log" min="0" max="120" step="1">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>Starting level of the pair</span><span id="ls0">1.00</span></span>
+    <input type="range" id="s0">
   </label>
   <label class="slider">
     <span class="lab"><span>Noise in the exchange</span><span id="ln">0.02</span></span>
-    <input type="range" id="n" min="0" max="0.3" step="0.01" value="0.02">
+    <input type="range" id="n">
   </label>
+  <div class="seedrow">
+    <label for="seed">Noise seed</label>
+    <input type="number" id="seed" min="0" max="999999" step="1" value="1">
+    <button id="newseed">New seed</button>
+    <span class="hint inline">Same seed, same run.</span>
+  </div>
 </fieldset>
 
 <fieldset>
   <legend>Situations to try</legend>
-  <div class="row" id="presets"></div>
+  <div id="presets"></div>
+  <p class="note" id="presetnote">Each of these is a caricature — a mechanism drawn small enough to
+  watch, not a measurement of anything.</p>
   <div class="log" id="log"></div>
 </fieldset>
 
 <footer>
-  Rivalry is symmetrical schismogenesis: each answers boasting with boasting, so the pair climbs
+  <p>Rivalry is symmetrical schismogenesis: each answers boasting with boasting, so the pair climbs
   together. Dominance is complementary: assertion draws out submission, which invites more assertion,
   so the pair forks. Bateson argued in <i>Naven</i> (1936) that either runs to breakdown unless
-  something checks it — restraint, or the two patterns held against each other.
+  something checks it — restraint, or the two patterns held against each other.</p>
+  <p>Read as politics, the two pens are each party's distance from the centre, so the distance
+  <i>between</i> the parties is their sum. That makes left–right polarisation a symmetrical process:
+  the two sides are not doing opposite things, they are doing the same thing in opposite directions.
+  What the model then insists on is that no amount of anger makes the process run away on its own —
+  only the loss of whatever used to pull both sides back. That is a claim about this model, not a
+  finding about any country.</p>
 </footer>
 <script type="module" src="src/app.js"></script>
 </body>
