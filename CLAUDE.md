@@ -58,6 +58,11 @@ described there, update the README in the same commit or don't make the change.
 - **The three demo arms match on centroid distance and separate on the panel.** Both halves are
   asserted. Retuning one arm means re-checking both — a curve fit that loses the mechanism's
   fingerprint is a worse config even when the fit is better.
+- **Common ground must separate all three arms, and must never head Act 1.** It is the reveal's
+  headline precisely because it gives the puzzle away; if a retune makes the arms agree on it,
+  the panel has lost its best row.
+- **Each arm's one-line verdict is asserted against the measures.** The copy under a crowd panel
+  is a claim about the model. If you reword it, move the test with it.
 
 ## Voice
 

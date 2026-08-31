@@ -10,9 +10,13 @@
 <body>
 <header>
   <h1>Schismogenesis</h1>
-  <p class="sub">Two groups drift apart over thirty years. The interesting question is not
-  whether it happened — you can see that it did — but what did it. This is a laboratory for
-  finding out that the answer is much harder to read off a chart than it looks.</p>
+  <p class="sub">Gregory Bateson's word for what happens when two sides keep reacting to each
+  other until the reacting itself is what drives them apart. A couple where one nags and the
+  other withdraws. Two neighbours outdoing each other's fences. Two parties answering every
+  move with a slightly bigger one. The pattern is the same in all three, and nobody caught in
+  it has to intend where it ends up.</p>
+  <p class="sub">Below is a small simulation of that. It takes a few minutes, and it starts
+  with a question you will probably get wrong — which is the point.</p>
 </header>
 
 <section class="act" id="act1">
@@ -21,7 +25,8 @@
     <canvas id="challenge" class="tall"></canvas>
   </div>
   <p class="caption">Distance between two groups, over thirty election cycles. One run, one
-  number, the shape a news graphic would show you.</p>
+  number, the shape a news graphic would show you. The units are arbitrary, which is worth
+  noticing in itself: the line goes up, and that is the whole of what it tells you.</p>
   <p class="ask">Before you scroll: what would you say caused it?</p>
   <div class="row tight guesses" id="guesses"></div>
 
@@ -38,10 +43,21 @@
 
 <section class="act" id="act2" hidden>
   <h2>What would have told them apart</h2>
-  <p class="lede">One number hid the difference. Several do not. Choose a row to see which runs
-  it actually separates.</p>
-  <table class="panel"><tbody id="panelBody"></tbody></table>
-  <p class="note" id="panelNote"></p>
+  <p class="lede">The line averaged 240 people down to one number a cycle. Here are the same
+  three runs with the people left in. Same starting crowd, same ninety cycles.</p>
+  <div class="row tight">
+    <button class="primary" id="peopleReplay">Replay</button>
+    <span class="hint inline">Group A above the line, group B below. Each dot is a person;
+    faint threads are the ties that still reach across.</span>
+  </div>
+  <div class="triptych people" id="peopleCharts"></div>
+  <p class="diagnosis" id="groundLine">&nbsp;</p>
+  <details id="panelDetails">
+    <summary>Every measure, as numbers</summary>
+    <p class="lede">Choose a row to see which runs it actually separates.</p>
+    <table class="panel"><tbody id="panelBody"></tbody></table>
+    <p class="note" id="panelNote"></p>
+  </details>
 </section>
 
 <section class="act" id="act3" hidden>

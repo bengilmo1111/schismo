@@ -89,6 +89,7 @@ export function createPopulation(controls = defaultControls(), opts = {}) {
   const press = new Float64Array(n);   // role dimension 0: demand, dominance, surveillance
   const yieldd = new Float64Array(n);  // role dimension 1: withdrawal, submission, concealment
   const g = new Uint8Array(n);
+  const entered = new Int32Array(n);   // tick each agent joined; 0 for the founders
   const ties = new Int32Array(n * TIES).fill(-1);
 
   const gauss = () => (rng() + rng() + rng() + rng() - 2) * 0.7; // cheap, bounded, seeded
@@ -114,7 +115,7 @@ export function createPopulation(controls = defaultControls(), opts = {}) {
   const base = [meanOf(x, g, 0, n), meanOf(x, g, 1, n)];
 
   return {
-    n, x, x0, press, yieldd, g, ties,
+    n, x, x0, press, yieldd, g, ties, entered,
     base,              // the t=0 group centroids, which the decomposition measures against
     t: 0,
     seed,
@@ -250,6 +251,7 @@ function leave(state, G, rng, meanX) {
     const sd = cnt ? Math.sqrt(Math.max(0, sq / cnt - mu * mu)) : 0;
     x[i] = mu + gauss() * sd;      // a newcomer drawn from those who remain, spread and all
     x0[i] = x[i];                  // entering now: no history to inherit
+    state.entered[i] = state.t;
     state.replaced += 1;
   }
 }
@@ -291,24 +293,26 @@ export const ARMS = [
     name: 'They pushed each other apart',
     module: 'Symmetrical Bateson (§18)',
     controls: { respond: 0.022, margin: 0.64, damping: 0.145 },
-    blurb: 'Each side answers the other and adds a margin. Nobody joins, nobody leaves, and ' +
-      'the network never changes — every bit of the movement is people changing their minds.'
+    verdict: 'Everyone moved, together.',
+    blurb: 'Nobody joined, nobody left, no tie changed. Each group crossed the room as a block.'
   },
   {
     key: 'sorting',
     name: 'They stopped mixing',
     module: 'Homophily + rewiring, with reactance at the boundary (§18)',
     controls: { assimilate: 0.60, confidence: 0.05, repel: 0.19, homophily: 0.97, rewire: 0.79 },
-    blurb: 'Ties drift toward the like-minded and the few contacts left across the boundary ' +
-      'push rather than persuade. Membership never changes; who talks to whom does.'
+    verdict: 'The threads across the middle went first.',
+    blurb: 'People moved, but apart from one another rather than into two camps — which is why ' +
+      'the two sides still share as much ground as they started with.'
   },
   {
     key: 'exit',
     name: 'The moderates left',
     module: 'Selective exit and replacement (§2.1, §18)',
     controls: { exit: 0.90 },
-    blurb: 'Nobody changes their mind at all. The members most drawn to the other side leave ' +
-      'and are replaced from the ranks of those who stayed, and the average moves on its own.'
+    verdict: 'Nobody changed their mind at all.',
+    blurb: 'Different people showed up. Those most drawn to the other side left, and were ' +
+      'replaced from among the ones who stayed.'
   }
 ];
 

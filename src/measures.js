@@ -113,6 +113,7 @@ export function summarise(state) {
   return {
     t: state.t,
     distance: centroidDistance(state),
+    commonGround: commonGround(state),
     within: withinSpread(state),
     bimodality: bimodality(state),
     crossTies: crossTieShare(state),
@@ -154,4 +155,31 @@ export function histogram(state, bins = 40, lo = -2.5, hi = 2.5) {
   for (let i = 0; i < bins; i++) peak = Math.max(peak, out[i]);
   if (peak > 0) for (let i = 0; i < bins; i++) out[i] /= peak;
   return out;
+}
+
+/**
+ * How much of the two groups' range is still shared: the overlapping coefficient, computed by
+ * binning both groups over a common range and summing the smaller share in each bin.
+ *
+ * 1 means the two distributions are indistinguishable; 0 means they have no ground in common.
+ * It is the one figure here a reader needs no units for, and unlike a fixed "polarised"
+ * threshold it does not encode anybody's preferred centre — §13.3's warning.
+ */
+export function commonGround(state, bins = 48) {
+  const { x, g, n } = state;
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < n; i++) { lo = Math.min(lo, x[i]); hi = Math.max(hi, x[i]); }
+  if (!(hi > lo)) return 1;
+  const pad = (hi - lo) * 0.02;
+  lo -= pad; hi += pad;
+  const a = new Float64Array(bins), b = new Float64Array(bins);
+  let na = 0, nb = 0;
+  for (let i = 0; i < n; i++) {
+    const k = Math.max(0, Math.min(bins - 1, Math.floor(((x[i] - lo) / (hi - lo)) * bins)));
+    if (g[i] === 0) { a[k]++; na++; } else { b[k]++; nb++; }
+  }
+  if (!na || !nb) return 0;
+  let shared = 0;
+  for (let k = 0; k < bins; k++) shared += Math.min(a[k] / na, b[k] / nb);
+  return shared;
 }

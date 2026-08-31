@@ -148,6 +148,39 @@ test('the three arms agree on the curve and disagree on everything else', () => 
   assert.ok(panels.exit.replaced > 0.1 && panels.sorting.replaced === 0);
 });
 
+test('each arm\'s one-line verdict is true of what the arm actually does', () => {
+  const seeds = [3, 11, 29, 47, 63, 81];
+  const panel = key => {
+    const acc = { within: 0, crossTies: 0, influenceShare: 0, commonGround: 0, start: 0 };
+    for (const seed of seeds) {
+      const s = runPopulation(armControls(key), { n: 240, seed, steps: 90 }, summarise);
+      for (const k of ['within', 'crossTies', 'influenceShare', 'commonGround']) {
+        acc[k] += s.trace[90][k] / seeds.length;
+      }
+      acc.start += s.trace[0].commonGround / seeds.length;
+    }
+    return acc;
+  };
+  const p = Object.fromEntries(ARMS.map(a => [a.key, panel(a.key)]));
+
+  // "Everyone moved, together" — all of it is persuasion, and each group stays a block.
+  assert.ok(p.reciprocal.influenceShare > 0.9);
+  assert.ok(p.reciprocal.within < 0.06, 'a block does not spread out');
+
+  // "The threads across the middle went first" — ties fall, and the shared ground does not.
+  assert.ok(p.sorting.crossTies < 0.42);
+  assert.ok(Math.abs(p.sorting.commonGround - p.sorting.start) < 0.1,
+    `sorting should leave the shared ground alone: ${p.sorting.start} -> ${p.sorting.commonGround}`);
+
+  // "Nobody changed their mind at all" — none of the movement is persuasion.
+  assert.ok(p.exit.influenceShare < 0.1);
+
+  // And common ground has to separate all three, or the headline sentence is empty.
+  const grounds = ARMS.map(a => p[a.key].commonGround).sort((a, b) => a - b);
+  assert.ok(grounds[1] - grounds[0] > 0.05 && grounds[2] - grounds[1] > 0.05,
+    `common ground should separate every pair: ${grounds}`);
+});
+
 /* ---- §18.2: the cure depends on the cause ---- */
 
 test('each targeted intervention bends its own mechanism and not the others', () => {

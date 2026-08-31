@@ -5,8 +5,8 @@ import {
   ARMS, armControls, DEMO_BASE, INTERVENTIONS, interventionAt,
   runPopulation, createPopulation, stepPopulation, gains
 } from './population.js';
-import { summarise, histogram, seedSpread } from './measures.js';
-import { createCurvePlot, createRibbonPlot, createScatterPlot } from './plot.js';
+import { summarise, histogram, commonGround } from './measures.js';
+import { createCurvePlot, createRibbonPlot, createScatterPlot, createPeoplePlot } from './plot.js';
 import { makeRng } from './model.js';
 
 const $ = id => document.getElementById(id);
@@ -87,8 +87,89 @@ function reveal(picked) {
   });
   $('act2').hidden = false;
   $('act3').hidden = false;
+  buildPeople();
+  playPeople();
+  groundSentence();
   buildPanel();
   runIntervention();
+}
+
+/* ---- act 2: the people ---- */
+
+// One fixed horizontal scale for all three panels, worked out once from the separation they
+// all share rather than from the widest crowd — otherwise the most spread-out run sets the
+// zoom and the others look like nothing happened. A few outliers pin to the edge; that is a
+// fair price for panels that can be compared at all.
+const PEOPLE_LIM = 2.4 * Math.max(...ARMS.map(a => runs[a.key][STEPS].distance));
+
+const peoplePlots = {};
+let crowds = null;
+let peopleRunning = false;
+
+function buildPeople() {
+  $('peopleCharts').replaceChildren();
+  ARMS.forEach(arm => {
+    const fig = document.createElement('figure');
+    fig.innerHTML = `<canvas class="people"></canvas><figcaption>` +
+      `<b style="color:var(${COLOUR[arm.key]})">${arm.name}</b><br>` +
+      `<span class="verdict">${arm.verdict}</span> ${arm.blurb}</figcaption>`;
+    $('peopleCharts').appendChild(fig);
+    peoplePlots[arm.key] = createPeoplePlot(fig.querySelector('canvas'));
+  });
+}
+
+function resetPeople() {
+  crowds = ARMS.map(arm => ({
+    key: arm.key,
+    state: createPopulation(armControls(arm.key), { n: N, seed: demoSeed }),
+    rng: makeRng(demoSeed + 7919)
+  }));
+  drawPeople();
+}
+
+const drawPeople = () => crowds.forEach(c => peoplePlots[c.key].draw(c.state, { lim: PEOPLE_LIM }));
+
+let peopleTick = 0;
+function peopleFrame() {
+  if (!peopleRunning) return;
+  let running = false;
+  if (peopleTick++ % 2 === 0) {
+    for (const c of crowds) if (c.state.t < STEPS) { stepPopulation(c.state, c.rng); running = true; }
+  } else {
+    running = crowds.some(c => c.state.t < STEPS);
+  }
+  drawPeople();
+  if (!running) { peopleRunning = false; $('peopleReplay').textContent = 'Replay'; return; }
+  requestAnimationFrame(peopleFrame);
+}
+
+function playPeople() {
+  resetPeople();
+  peopleRunning = true;
+  peopleTick = 0;
+  $('peopleReplay').textContent = 'Running';
+  requestAnimationFrame(peopleFrame);
+}
+
+$('peopleReplay').onclick = playPeople;
+
+/** The one figure that needs no units, and the one place the three stop resembling each other. */
+function groundSentence() {
+  const at = (key, t) => {
+    const s = createPopulation(armControls(key), { n: N, seed: demoSeed });
+    const rng = makeRng(demoSeed + 7919);
+    for (let i = 0; i < t; i++) stepPopulation(s, rng);
+    return commonGround(s);
+  };
+  const pc = v => Math.round(v * 100) + '%';
+  const start = at(ARMS[0].key, 0);
+  const ends = Object.fromEntries(ARMS.map(a => [a.key, at(a.key, STEPS)]));
+  $('groundLine').innerHTML =
+    `<b>How much ground they still share.</b> All three crowds began with ${pc(start)} of their ` +
+    `range in common. Ninety cycles later: <b>${pc(ends.reciprocal)}</b> where they pushed each ` +
+    `other apart, <b>${pc(ends.exit)}</b> where the moderates left — and <b>${pc(ends.sorting)}</b> ` +
+    `where they merely stopped mixing, which is as much as they started with. The averages moved ` +
+    `the same distance in all three. What that cost them did not.`;
 }
 
 /* ---- act 2: the panel ---- */
@@ -97,6 +178,8 @@ function reveal(picked) {
 const ROWS = [
   { key: 'distance', sep: 0.10, label: 'Distance between the groups',
     weakens: 'The number everybody quotes. On its own it is compatible with all three.' },
+  { key: 'commonGround', sep: 0.12, label: 'Ground the two still share',
+    weakens: 'Unchanged means the averages parted without the people doing so.' },
   { key: 'influenceShare', sep: 0.30, label: 'Share of the move that is people changing their minds',
     weakens: 'Near zero means nobody was persuaded — the membership changed instead (§2.1).' },
   { key: 'replaced', sep: 0.10, label: 'Share of members who left and were replaced',

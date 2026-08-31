@@ -48,10 +48,12 @@ adding a single undifferentiated “polarization” slider.
    three produce it. The three runs share a starting population and were *fitted* to the same
    curve; nothing makes them coincide on their own, and the app says so. This is §13.1's
    equifinality — "the pattern is not the mechanism" — made concrete.
-2. **What would have told them apart.** The §11.7 output panel. One number hid the difference;
-   six do not. Every row carries what it would rule out (§12.1), and each has its own bar for
-   what counts as a difference, because a 0.09 swing in a tie proportion is not the same size
-   as a 0.09 swing in a share running 0 to 1.
+2. **What would have told them apart.** The same three runs replayed **with the people left
+   in** — 240 dots, banded by group, with the ties that still cross the boundary drawn
+   underneath and newcomers ringed. The three mechanisms are obvious here and invisible in a
+   centroid line: everyone slides; nobody moves much but the threads vanish; nobody moves at
+   all but people wink out and are replaced. Underneath it, **common ground** — the share of
+   range the two still have in common — and then the full §11.7 panel, folded away.
 3. **Now try to stop it.** The same remedy applied to all three runs at a cycle you choose.
    The measured effects are below, and they are the reason the diagnosis matters.
 4. **The laboratory.** Every module on its own controls, on §18.1's normalised convention, with
@@ -186,7 +188,27 @@ response, the population model reproduces `transition()` step for step** — mat
 side's *intensity*, meaning their distance from the centre, makes the centroid distance obey
 the dyad's `sum` recurrence exactly. A test asserts it, so the two models cannot drift apart.
 
-### The measure that does the work
+### Two figures worth knowing about
+
+**Common ground** is the overlapping coefficient between the two groups' distributions: 1 means
+indistinguishable, 0 means nothing shared. It is the only figure in the app that needs no
+units, and unlike a fixed "polarised" threshold it encodes nobody's preferred centre (§13.3).
+
+It is deliberately *not* the headline of Act 1, because it cannot be. The three arms are fitted
+to match on centroid distance, and they do not match on this at all:
+
+| | at the start | after ninety cycles |
+|---|---|---|
+| They pushed each other apart | 58% | **0%** |
+| The moderates left | 58% | **6%** |
+| They stopped mixing | 58% | **57%** |
+
+Putting it up front would give the puzzle away in one glance. It belongs to the reveal, where
+it carries the sharpest fact in the app: under sorting the two averages move as far apart as in
+the other two runs while the shared ground does not shrink at all. The same curve, and three
+quite different costs.
+
+## The measure that does the work
 
 Movement in the group centroids splits, exactly, into
 

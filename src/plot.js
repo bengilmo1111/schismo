@@ -163,3 +163,69 @@ export function createScatterPlot(canvas) {
   }
   return { draw };
 }
+
+/**
+ * The people themselves. One dot per agent, placed by trait, banded by group, with the ties
+ * that still cross the boundary drawn underneath and newcomers ringed.
+ *
+ * This exists because the three mechanisms are obvious here and invisible in a centroid line:
+ * under reciprocal response every dot slides, under sorting the dots barely move while the
+ * cross-boundary ties disappear, and under exit the dots do not move at all — they vanish and
+ * reappear on their own side.
+ */
+export function createPeoplePlot(canvas) {
+  const jitter = i => (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1;
+
+  function draw(state, opts = {}) {
+    const { ctx, w, h } = fit(canvas);
+    ctx.clearRect(0, 0, w, h);
+    if (!state) return;
+    // One scale for every panel, or they stop being comparable — and the comparison is the
+    // whole point. Values beyond it are pinned to the edge rather than dropped.
+    const lim = opts.lim || 1;
+    const X = v => w / 2 + Math.max(-1, Math.min(1, v / lim)) * (w / 2 - 8);
+    const band = (g, i) => (g === 0 ? 6 + jitter(i) * (h / 2 - 12) : h / 2 + 6 + jitter(i) * (h / 2 - 12));
+
+    ctx.strokeStyle = colour('--grid-strong');
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, Math.round(h / 2) + 0.5); ctx.lineTo(w, Math.round(h / 2) + 0.5); ctx.stroke();
+    ctx.strokeStyle = colour('--grid');
+    ctx.beginPath(); ctx.moveTo(Math.round(w / 2) + 0.5, 0); ctx.lineTo(Math.round(w / 2) + 0.5, h); ctx.stroke();
+
+    // Ties that still reach across the boundary. Watching these thin out is what sorting is.
+    if (opts.ties !== false) {
+      const per = state.ties.length / state.n;
+      ctx.strokeStyle = colour('--grid-strong');
+      ctx.globalAlpha = 0.22;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      for (let i = 0; i < state.n; i++) {
+        for (let k = 0; k < per; k++) {
+          const j = state.ties[i * per + k];
+          if (j < 0 || state.g[j] === state.g[i]) continue;
+          ctx.moveTo(X(state.x[i]), band(state.g[i], i));
+          ctx.lineTo(X(state.x[j]), band(state.g[j], j));
+        }
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    for (let i = 0; i < state.n; i++) {
+      const fresh = state.entered && state.t - state.entered[i] < 6 && state.entered[i] > 0;
+      ctx.fillStyle = colour(state.g[i] === 0 ? '--pen-a' : '--pen-b');
+      ctx.globalAlpha = fresh ? 1 : 0.55;
+      ctx.beginPath();
+      ctx.arc(X(state.x[i]), band(state.g[i], i), fresh ? 3 : 2, 0, Math.PI * 2);
+      ctx.fill();
+      if (fresh) {                       // a newcomer: somebody left and this is who replaced them
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = colour('--reached');
+        ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(X(state.x[i]), band(state.g[i], i), 5, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  return { draw };
+}
