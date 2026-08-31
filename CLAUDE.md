@@ -10,10 +10,15 @@ described there, update the README in the same commit or don't make the change.
 - **`src/model.js` stays pure.** No DOM, no `requestAnimationFrame`, no bare `Math.random` —
   randomness comes in through the injected `rng` argument. This is what keeps the model
   testable, and every claim in the README is pinned by a test that relies on it.
-- **`src/chart.js` owns no logic.** It reads state and draws. Colours come from CSS variables
-  via `getComputedStyle`, so the palette lives in `styles.css` only. Thresholds arrive as
-  arguments; the chart never imports a model constant.
-- **`src/app.js` is wiring.** Any real behaviour that appears here belongs in the model.
+- **`src/chart.js` and `src/plot.js` own no logic.** They read state and draw. Colours come
+  from CSS variables via `getComputedStyle`, so the palette lives in `styles.css` only.
+  Thresholds and ranges arrive as arguments; neither file imports a model constant.
+  `chart.js` is the dyad recorder; `plot.js` is the population curves, ribbon and scatter.
+- **`src/app.js` and `src/lab.js` are wiring.** `app.js` drives the dyad, `lab.js` the four
+  acts and the population laboratory. Any real behaviour that appears here belongs in a model.
+- **Two models, on purpose.** `src/model.js` is the exactly solvable dyad; `src/population.js`
+  is the N-agent laboratory and `src/measures.js` scores it. They are joined by a test, not by
+  a shared abstraction: N=2 with nothing but reciprocal response must reproduce `transition()`.
 - **Slider bounds live in `PARAM_RANGES`.** `app.js` applies them to the inputs and
   `decodeParams` clamps to them, so the UI and a hostile URL cannot disagree. Don't put
   `min`/`max` back into the markup.
@@ -36,6 +41,24 @@ described there, update the README in the same commit or don't make the change.
 - `encodeParams`/`decodeParams` round-trip, and `decodeParams` never returns a value outside
   `PARAM_RANGES` or an unknown `mode`/`reading`.
 
+### The population model
+
+- **N=2 with reciprocal response only reproduces `transition()` step for step.** The dyad is
+  the population model's special case, not a separate story. If that test breaks, one of the
+  two models has drifted.
+- **The decomposition is a decomposition, not an attribution.** With nobody leaving,
+  composition is *exactly* zero; with nobody changing their mind, influence is *exactly* zero.
+  Small-but-nonzero means a bug.
+- **Homophily plus assimilation does not diverge** (§13.2). If a change makes it diverge, the
+  change is wrong, not the guide.
+- **Repulsion acts across the boundary only** (§10.1(4)). Letting it act inside a group
+  inflates within-group spread and exaggerates extremism, which §13.2 warns about explicitly.
+- **The complementary module never moves the trait centroid** (§10.1(3)). Roles have their own
+  two dimensions; if the opinion axis moves, they have been collapsed back onto it.
+- **The three demo arms match on centroid distance and separate on the panel.** Both halves are
+  asserted. Retuning one arm means re-checking both — a curve fit that loses the mechanism's
+  fingerprint is a worse config even when the fit is better.
+
 ## Voice
 
 The copy explains a real idea to someone who may not know it, in plain sentences. Keep it
@@ -57,6 +80,16 @@ a description of mechanisms already implemented by the app. Keep that distinctio
 the guide, with the complete URL visible as its own link text. `test/research.test.js` enforces
 that correspondence. Update the register and run the tests whenever research links change.
 
+## Research documents and honesty
+
+The app now cites the field guide by section. Those references are load-bearing claims: if you
+change a mechanism, check the section still says what the copy says it says. Two standing rules
+come from §13.3 — never present a stylised scenario as a prediction about real people, and
+remember that a fixed "polarised" threshold encodes somebody's preferred centre.
+
+Act 1 is fitted, and says so. The three arms were tuned to produce the same curve; that
+disclosure is not optional decoration, it is what keeps the demonstration honest.
+
 ## Next, roughly in order
 
 1. **Memory of past exchanges.** Right now each party reacts only to the other's current
@@ -66,12 +99,19 @@ that correspondence. Update the register and run the tests whenever research lin
 2. **Phase portrait.** A second view plotting `a` against `b` with the trajectory drawn on
    it makes the fixed points and the fork visible in a way the time series doesn't. The fixed
    point and the dominant eigenvector are already computed in `analysis` — draw them.
-3. **A third party.** Generalise state to N parties with a coupling matrix. This is where
-   the model gets genuinely new behaviour — coalitions, two-against-one — and where the
-   scalar `dif` readout needs replacing with pairwise gaps.
-4. **Calibrate one reading against real data.** The political reading is deliberately
-   uncalibrated. Fitting `m` and `r` to a published polarisation series would be a much
-   stronger claim, and would need to be labelled as one; do not half-do it.
+3. **More than two groups.** The population model still hard-codes two labels and no
+   reclassification, which is exactly the "binary bias" §13.1 warns about. Group membership is
+   already mutable in the state; letting labels change would add §2.1's fifth process.
+4. **False polarization** (§17.7). A private/public split plus meta-perception bias is the
+   cheapest remaining module and a strong one: perceived distance exceeding private distance,
+   and then becoming self-fulfilling. `G_false` in §18.2 is the measure.
+5. **The modules left on the shelf.** Resource rivalry, institutional lock-in (§17.11–17.13),
+   movement–countermovement and radical flanks (§17.2–17.3), the security dilemma. Each is a
+   §18 row with a stated critical comparison; add one at a time, as §18 instructs.
+6. **Calibrate one reading against real data** (§19, §20). Deliberately not done. §12.3 warns
+   that aggregate series leave many parameter sets observationally equivalent, so this means
+   reporting ranges rather than a fit, and would need labelling as a much stronger claim than
+   anything the app currently makes. Do not half-do it.
 
-Items 1–2 are self-contained. Item 3 is a rewrite of the model's shape; do it on a branch and
-keep the two-party presets working. Item 4 is as much an editorial decision as a technical one.
+Items 1–2 and 4 are self-contained. Item 3 changes the model's shape; do it on a branch and
+keep the demo arms matching. Item 6 is as much an editorial decision as a technical one.

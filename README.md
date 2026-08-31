@@ -1,18 +1,20 @@
 # Schismogenesis
 
-A two-party feedback simulator for Gregory Bateson's schismogenesis: the process by which
-two parties, each reacting to the other, progressively drive each other's behaviour to extremes.
+A laboratory for Gregory Bateson's schismogenesis: the process by which two parties, each
+reacting to the other, progressively drive each other's behaviour to extremes.
 
-Two parties are drawn as pens on a chart recorder. You set how strongly each reads the other,
-how far each insists on going beyond the other, and how much restraint pulls each back. You
-seed the difference they start from. The app names which of Bateson's cases you are watching,
-and tells you how many exchanges it will take before the two are opposites.
+The app's argument is that **you cannot read the mechanism off the curve.** It opens by showing
+one line — two groups drifting apart over thirty election cycles — and asking what caused it.
+Whatever you answer, the reveal is that three quite different mechanisms produce that same line:
+the two sides pushing each other apart, the two sides ceasing to mix, or the moderates leaving
+and being replaced. The rest of the app is about what *would* have told them apart, why it
+matters, and what happens when you drive the mechanisms yourself.
 
 No build step, no dependencies. Open it, or serve it and open it.
 
 ```bash
 npm run dev     # serves on :5173
-npm test        # 27 tests over the pure model
+npm test        # 43 tests over the pure models
 ```
 
 `index.html` loads ES modules, so `file://` will not work — use the dev server or any
@@ -39,6 +41,22 @@ larger research field. The repository now includes:
 Those documents are a design space, not a claim that every listed mechanism already exists in
 the app. Any expansion should preserve that distinction and expose causal controls rather than
 adding a single undifferentiated “polarization” slider.
+
+## The four acts
+
+1. **What made this happen?** One curve, three plain-language answers, and a reveal that all
+   three produce it. The three runs share a starting population and were *fitted* to the same
+   curve; nothing makes them coincide on their own, and the app says so. This is §13.1's
+   equifinality — "the pattern is not the mechanism" — made concrete.
+2. **What would have told them apart.** The §11.7 output panel. One number hid the difference;
+   six do not. Every row carries what it would rule out (§12.1), and each has its own bar for
+   what counts as a difference, because a 0.09 swing in a tie proportion is not the same size
+   as a 0.09 swing in a share running 0 to 1.
+3. **Now try to stop it.** The same remedy applied to all three runs at a cycle you choose.
+   The measured effects are below, and they are the reason the diagnosis matters.
+4. **The laboratory.** Every module on its own controls, on §18.1's normalised convention, with
+   a distribution ribbon, a role scatter, ghost traces from earlier seeds, and the original
+   dyad kept intact as the exactly solvable case.
 
 ## The two patterns
 
@@ -155,15 +173,81 @@ Every control is in the URL fragment; `encodeParams` omits anything left at its 
 `decodeParams` clamps everything it reads back into range. Noise comes from a seeded PRNG
 exposed in the UI, so a surprising run can be linked and re-run exactly.
 
+## The population model
+
+`src/population.js` holds N agents, each with a trait `x`, **two separate role dimensions**
+(§10.1(3) — dominance and submission are not ±1 on one opinion axis), a mutable group label,
+and coevolving ties (§10.1(5), without which sorting and exit cannot be represented at all).
+Controls are normalised to [0,1] on §18.1's convention; `gains()` is the documented mapping
+onto actual rates, gains and radii. `src/measures.js` scores a run.
+
+The dyad is not a separate story. **With one agent per group and nothing but reciprocal
+response, the population model reproduces `transition()` step for step** — matching the other
+side's *intensity*, meaning their distance from the centre, makes the centroid distance obey
+the dyad's `sum` recurrence exactly. A test asserts it, so the two models cannot drift apart.
+
+### The measure that does the work
+
+Movement in the group centroids splits, exactly, into
+
+- **influence** — how far today's members have moved from the traits they entered with;
+- **composition** — how far the entry traits of today's members sit from the original centroid.
+
+That is §2.1 turned into a number. With nobody leaving, composition is exactly zero; with
+nobody changing their mind, influence is exactly zero. Both are asserted, and "small" would be
+a bug rather than a rounding artefact.
+
+### What the model refuses to do
+
+Some results are there because the guide says they should be, and are pinned so they stay:
+
+- **Homophily plus assimilation does not pull groups apart** (§13.2, "homophily is not
+  sufficient"). Sorting only diverges once reactance is added at the boundary.
+- **Repulsion acts across the boundary only** (§10.1(4)). Letting it act inside a group
+  inflates within-group spread and exaggerates extremism — §13.2 warns about exactly this, and
+  an earlier draft of this model did it.
+- **The complementary module never moves the trait centroid.** Roles fork on their own axes.
+
+## Which remedy works
+
+Interventions are scheduled control changes, so what they do is a property of the model rather
+than of the copy. Applied at cycle 40, measured at cycle 90, averaged over six seeds:
+
+| intervention | reciprocal | sorting | exit |
+|---|---|---|---|
+| Stop answering each other | **−95%** | 0% | 0% |
+| Open contact | −0% | **+15%** | +2% |
+| Structured contact | −0% | **−93%** | +2% |
+| Keep the moderates | 0% | 0% | −5% |
+| Blanket restraint | −68% | −100% | −100% |
+
+Four things fall out of that table, none of them put there by hand:
+
+1. **The targeted remedies are specific.** Each fixes one mechanism and does nothing
+   measurable to the others. Misreading the curve wastes the intervention entirely.
+2. **Contact can backfire.** Unstructured mixing makes sorting *worse*; the same contact with
+   the threat removed nearly cures it. §8.4 and §13.2 both warn that contact effects are
+   heterogeneous, and this is that warning as a number.
+3. **Exit is close to irreversible.** Closing the door at cycle 40 recovers 5%; closing it at
+   cycle 3 recovers about a quarter. Nobody who already left comes back, so composition damage
+   does not undo.
+4. **The one remedy that works everywhere works by suppression.** Blanket restraint flattens
+   every mechanism because it pulls everyone toward the middle regardless of what is happening.
+   §13.3 is pointed about this: "depolarization can mean suppressing legitimate dissent."
+
 ## Layout
 
 ```
 index.html        markup and control ids
 styles.css        chart-recorder palette; colours are CSS variables read by chart.js
-src/model.js      pure simulation — step, the transition matrix, arrival, readings, presets
-src/chart.js      canvas renderer. Reads state, draws pixels, owns no logic.
-src/app.js        wiring: controls to params, clock, readouts, URL fragment.
-test/model.test.js
+src/model.js      the dyad: step, the transition matrix, arrival, readings, presets
+src/population.js the N-agent laboratory: modules, interventions, the demo arms
+src/measures.js   the output panel, including the influence/composition decomposition
+src/chart.js      the dyad's chart recorder. Reads state, draws pixels, owns no logic.
+src/plot.js       population curves, distribution ribbon, role scatter. Also no logic.
+src/app.js        wiring for the dyad
+src/lab.js        wiring for the four acts and the laboratory
+test/model.test.js, test/population.test.js, test/research.test.js
 ```
 
 ## Foundational reading

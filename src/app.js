@@ -6,6 +6,7 @@ import {
   PARAM_RANGES, POLARIZED, CAP, HORIZON
 } from './model.js';
 import { createChart } from './chart.js';
+import './lab.js';
 
 const $ = id => document.getElementById(id);
 const chart = createChart($('chart'));
