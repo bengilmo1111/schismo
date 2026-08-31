@@ -49,6 +49,14 @@ and because it is the version most people will recognise, not to make a point ab
 Keep the presets symmetric in construction, keep the claims about the model rather than about
 the world, and keep the disclaimer in the footer.
 
+## Research documents
+
+`docs/research/schismogenesis-field-guide.md` is the broad research and design space; it is not
+a description of mechanisms already implemented by the app. Keep that distinction explicit.
+`docs/research/complete-source-register.md` must contain every distinct external URL cited by
+the guide, with the complete URL visible as its own link text. `test/research.test.js` enforces
+that correspondence. Update the register and run the tests whenever research links change.
+
 ## Next, roughly in order
 
 1. **Memory of past exchanges.** Right now each party reacts only to the other's current
