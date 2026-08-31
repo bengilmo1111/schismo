@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schismogenesis</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Schismogenesis</h1>
+  <p class="sub">Two parties, each reacting to the other. Bateson's question was why some
+  relationships settle and others run away with themselves. Set the couplings and watch the pens.</p>
+</header>
+
+<div class="recorder">
+  <canvas id="chart"></canvas>
+  <div class="pens">
+    <div class="pen"><i class="nib" style="background:var(--pen-a)"></i>A <span class="val" id="va">0.60</span></div>
+    <div class="pen"><i class="nib" style="background:var(--pen-b)"></i>B <span class="val" id="vb">0.40</span></div>
+    <div class="tick">t = <span id="vt">0</span></div>
+  </div>
+</div>
+
+<p class="diagnosis" id="diagnosis">Press run.</p>
+
+<div class="gauges">
+  <div class="gauge">
+    <h3>Joint level (A + B)</h3>
+    <div class="num" id="gsum">1.00</div>
+    <div class="state" id="ssum">&nbsp;</div>
+  </div>
+  <div class="gauge">
+    <h3>Role gap (A − B)</h3>
+    <div class="num" id="gdif">0.20</div>
+    <div class="state" id="sdif">&nbsp;</div>
+  </div>
+</div>
+
+<div class="row">
+  <button class="primary" id="run">Run</button>
+  <button id="step">Step</button>
+  <button id="reset">Reset paper</button>
+</div>
+
+<fieldset>
+  <legend>How they read each other</legend>
+  <div class="seg" id="modes">
+    <button data-mode="sym">Rivalry</button>
+    <button data-mode="comp">Dominance</button>
+    <button data-mode="mix">Both at once</button>
+  </div>
+  <p class="hint" id="modehint"></p>
+
+  <label class="slider" id="blendWrap">
+    <span class="lab"><span>Share of dominance in the mix</span><span id="lblend">50%</span></span>
+    <input type="range" id="blend" min="0" max="1" step="0.02" value="0.5">
+  </label>
+
+  <label class="slider">
+    <span class="lab"><span>A's responsiveness</span><span id="lga">0.24</span></span>
+    <input type="range" id="ga" min="0" max="0.5" step="0.01" value="0.24">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>B's responsiveness</span><span id="lgb">0.24</span></span>
+    <input type="range" id="gb" min="0" max="0.5" step="0.01" value="0.24">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>Need to go one better</span><span id="lm">0.50</span></span>
+    <input type="range" id="m" min="0" max="1.5" step="0.05" value="0.5">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>Restraint pulling both back</span><span id="lr">0.06</span></span>
+    <input type="range" id="r" min="0" max="0.4" step="0.01" value="0.06">
+  </label>
+  <label class="slider">
+    <span class="lab"><span>Noise in the exchange</span><span id="ln">0.02</span></span>
+    <input type="range" id="n" min="0" max="0.3" step="0.01" value="0.02">
+  </label>
+</fieldset>
+
+<fieldset>
+  <legend>Situations to try</legend>
+  <div class="row" id="presets"></div>
+  <div class="log" id="log"></div>
+</fieldset>
+
+<footer>
+  Rivalry is symmetrical schismogenesis: each answers boasting with boasting, so the pair climbs
+  together. Dominance is complementary: assertion draws out submission, which invites more assertion,
+  so the pair forks. Bateson argued in <i>Naven</i> (1936) that either runs to breakdown unless
+  something checks it — restraint, or the two patterns held against each other.
+</footer>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "schismogenesis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A two-party feedback simulator for Gregory Bateson's schismogenesis",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve . -l 5173",
+    "test": "node --test \"test/**/*.test.js\""
+  }
+}
