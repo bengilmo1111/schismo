@@ -18,6 +18,28 @@ npm test        # 27 tests over the pure model
 `index.html` loads ES modules, so `file://` will not work — use the dev server or any
 static host. Deploys to Vercel or Pages as-is with no configuration.
 
+## Research base
+
+The current app deliberately implements one small, analytically tractable slice of a much
+larger research field. The repository now includes:
+
+- [the full schismogenesis research field guide](docs/research/schismogenesis-field-guide.md),
+  covering Bateson, related concepts, empirical evidence, formal models, cases, stabilizers,
+  measurement, causal diagnosis, and model limitations;
+- [the complete source register](docs/research/complete-source-register.md), containing all
+  141 distinct external sources used in the guide, each with its full visible URL;
+- a [20-control experimental core](docs/research/schismogenesis-field-guide.md#103-the-20-control-experimental-core)
+  and the larger [manipulable parameter catalogue](docs/research/schismogenesis-field-guide.md#10-manipulable-parameters-for-a-general-simulation);
+- [18 composable mechanism modules](docs/research/schismogenesis-field-guide.md#18-mechanism-modules-for-controlled-simulation-experiments),
+  from pure drift and Batesonian feedback to false polarization, security dilemmas,
+  institutional lock-in, linguistic divergence, spinouts, and cooperative contact; and
+- [calibration datasets](docs/research/schismogenesis-field-guide.md#19-data-sources-for-calibration-and-historical-comparison)
+  plus [estimation and validation guidance](docs/research/schismogenesis-field-guide.md#20-estimating-and-validating-parameters).
+
+Those documents are a design space, not a claim that every listed mechanism already exists in
+the app. Any expansion should preserve that distinction and expose causal controls rather than
+adding a single undifferentiated “polarization” slider.
+
 ## The two patterns
 
 **Symmetrical schismogenesis (called *rivalry* in the UI).** Each answers the other in kind
@@ -144,11 +166,20 @@ src/app.js        wiring: controls to params, clock, readouts, URL fragment.
 test/model.test.js
 ```
 
-## Reading
+## Foundational reading
 
-- Bateson, *Naven* (1936), especially the epilogue on schismogenesis.
-- Bateson, *Steps to an Ecology of Mind* (1972), "Culture Contact and Schismogenesis".
-- Watzlawick, Beavin & Jackson, *Pragmatics of Human Communication* (1967) — the same
-  dynamics as symmetrical and complementary interaction in couples.
-- Richardson, *Arms and Insecurity* (1960) — the arms-race case as a pair of linear
-  differential equations, which is very nearly the `mode: 'sym'` half of this model.
+- Gregory Bateson, *Naven: A Survey of the Problems Suggested by a Composite Picture of the
+  Culture of a New Guinea Tribe Drawn from Three Points of View* (1936; revised 1958),
+  especially the epilogue on schismogenesis:
+  [https://www.degruyter.com/document/doi/10.1515/9781503621138/html](https://www.degruyter.com/document/doi/10.1515/9781503621138/html)
+- Gregory Bateson, *Steps to an Ecology of Mind: Collected Essays in Anthropology, Psychiatry,
+  Evolution, and Epistemology* (1972), especially “Culture Contact and Schismogenesis”:
+  [https://press.uchicago.edu/ucp/books/book/chicago/S/bo3620295.html](https://press.uchicago.edu/ucp/books/book/chicago/S/bo3620295.html)
+- Paul Watzlawick, Janet Beavin Bavelas, and Don D. Jackson, *Pragmatics of Human Communication:
+  A Study of Interactional Patterns, Pathologies, and Paradoxes* (1967), which develops related
+  symmetrical and complementary interaction dynamics in couples:
+  [https://wwnorton.com/books/9780393710595](https://wwnorton.com/books/9780393710595)
+- Lewis Fry Richardson, *Arms and Insecurity: A Mathematical Study of the Causes and Origins of
+  War* (1960), the arms-race case as coupled linear differential equations and a close relative
+  of this model's `mode: 'sym'`:
+  [https://archive.org/details/armsinsecurity0000lewi](https://archive.org/details/armsinsecurity0000lewi)
