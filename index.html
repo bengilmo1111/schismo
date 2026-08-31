@@ -9,31 +9,35 @@
 </head>
 <body>
 <header>
-  <h1>Schismogenesis</h1>
-  <p class="sub">Gregory Bateson's word for what happens when two sides keep reacting to each
+  <div class="seg register" id="register">
+    <button data-mode="plain" aria-pressed="true">Full version</button>
+    <button data-mode="simple">Explain it simply</button>
+  </div>
+  <h1 id="pageTitle">Schismogenesis</h1>
+  <p class="sub" id="introA">Gregory Bateson's word for what happens when two sides keep reacting to each
   other until the reacting itself is what drives them apart. A couple where one nags and the
   other withdraws. Two neighbours outdoing each other's fences. Two parties answering every
   move with a slightly bigger one. The pattern is the same in all three, and nobody caught in
   it has to intend where it ends up.</p>
-  <p class="sub">Below is a small simulation of that. It takes a few minutes, and it starts
+  <p class="sub" id="introB">Below is a small simulation of that. It takes a few minutes, and it starts
   with a question you will probably get wrong — which is the point.</p>
 </header>
 
 <section class="act" id="act1">
-  <h2>What made this happen?</h2>
+  <h2 id="act1h">What made this happen?</h2>
   <div class="recorder">
     <canvas id="challenge" class="tall"></canvas>
   </div>
-  <p class="caption">Distance between two groups, over thirty election cycles. One run, one
+  <p class="caption" id="act1cap">Distance between two groups, over thirty election cycles. One run, one
   number, the shape a news graphic would show you. The units are arbitrary, which is worth
   noticing in itself: the line goes up, and that is the whole of what it tells you.</p>
-  <p class="ask">Before you scroll: what would you say caused it?</p>
+  <p class="ask" id="act1ask">Before you scroll: what would you say caused it?</p>
   <div class="row tight guesses" id="guesses"></div>
 
   <div id="reveal" hidden>
     <p class="diagnosis" id="revealText"></p>
     <div class="triptych" id="armCharts"></div>
-    <p class="note">These three runs start from the same population and were <i>fitted</i> to
+    <p class="note" id="revealNote">These three runs start from the same population and were <i>fitted</i> to
     the same curve — nothing makes them coincide on their own. That is the point rather than a
     trick: the line is compatible with all three, so it cannot be the evidence for any of them.
     The field guide calls this equifinality, and warns that “the pattern is not the mechanism”
@@ -42,18 +46,18 @@
 </section>
 
 <section class="act" id="act2" hidden>
-  <h2>What would have told them apart</h2>
-  <p class="lede">The line averaged 240 people down to one number a cycle. Here are the same
+  <h2 id="act2h">What would have told them apart</h2>
+  <p class="lede" id="act2lede">The line averaged 240 people down to one number a cycle. Here are the same
   three runs with the people left in. Same starting crowd, same ninety cycles.</p>
   <div class="row tight">
     <button class="primary" id="peopleReplay">Replay</button>
-    <span class="hint inline">Group A above the line, group B below. Each dot is a person;
+    <span class="hint inline" id="act2hint">Group A above the line, group B below. Each dot is a person;
     faint threads are the ties that still reach across.</span>
   </div>
   <div class="triptych people" id="peopleCharts"></div>
   <p class="diagnosis" id="groundLine">&nbsp;</p>
   <details id="panelDetails">
-    <summary>Every measure, as numbers</summary>
+    <summary id="panelSummary">Every measure, as numbers</summary>
     <p class="lede">Choose a row to see which runs it actually separates.</p>
     <table class="panel"><tbody id="panelBody"></tbody></table>
     <p class="note" id="panelNote"></p>
@@ -61,12 +65,12 @@
 </section>
 
 <section class="act" id="act3" hidden>
-  <h2>Now try to stop it</h2>
-  <p class="lede">If the curve cannot tell you the cause, does the cause matter? Apply the same
+  <h2 id="act3h">Now try to stop it</h2>
+  <p class="lede" id="act3lede">If the curve cannot tell you the cause, does the cause matter? Apply the same
   remedy to all three runs and watch what it does to each.</p>
   <div class="row tight" id="ivButtons"></div>
   <label class="slider">
-    <span class="lab"><span>Step in at cycle</span><span id="livAt">40</span></span>
+    <span class="lab"><span id="act3when">Step in at cycle</span><span id="livAt">40</span></span>
     <input type="range" id="ivAt" min="2" max="70" step="1" value="40">
   </label>
   <div class="triptych" id="ivCharts"></div>
@@ -231,11 +235,11 @@
 </section>
 
 <footer>
-  <p>Rivalry is symmetrical schismogenesis: each answers boasting with boasting, so the pair
+  <p id="footA">Rivalry is symmetrical schismogenesis: each answers boasting with boasting, so the pair
   climbs together. Dominance is complementary: assertion draws out submission, which invites
   more assertion, so the pair forks. Bateson argued in <i>Naven</i> (1936) that either runs to
   breakdown unless something checks it.</p>
-  <p>Everything here is a caricature small enough to watch, and the political framing is a
+  <p id="footB">Everything here is a caricature small enough to watch, and the political framing is a
   worked example rather than a claim about any country. Nothing in it is fitted to real data;
   section references point at the
   <a href="docs/research/schismogenesis-field-guide.md">research field guide</a> in this

@@ -14,7 +14,7 @@ No build step, no dependencies. Open it, or serve it and open it.
 
 ```bash
 npm run dev     # serves on :5173
-npm test        # 43 tests over the pure models
+npm test        # 50 tests over the pure models and the copy
 ```
 
 `index.html` loads ES modules, so `file://` will not work — use the dev server or any
@@ -56,6 +56,15 @@ adding a single undifferentiated “polarization” slider.
    range the two still have in common — and then the full §11.7 panel, folded away.
 3. **Now try to stop it.** The same remedy applied to all three runs at a cycle you choose.
    The measured effects are below, and they are the reason the diagnosis matters.
+Every act has a second set of words. **Explain it simply** (top of the page, or `?simple=1`)
+swaps the whole page into a register aimed at a child: shorter sentences, plainer names for the
+three stories, no section references, larger type, and the laboratory folded away. It is an
+overlay rather than a rewrite — the full wording is restored on the way back, and the model,
+the numbers and the charts are identical in both. `src/simple.js` holds every word of it and
+`test/simple.test.js` keeps it honest: sentences under 24 words, a banned jargon list, no
+overclaiming, and the caveat that this is a pretend world has to survive into the simple
+register too, because §13.3 applies whoever is reading.
+
 4. **The laboratory.** Every module on its own controls, on §18.1's normalised convention, with
    a distribution ribbon, a role scatter, ghost traces from earlier seeds, and the original
    dyad kept intact as the exactly solvable case.
@@ -268,8 +277,9 @@ src/measures.js   the output panel, including the influence/composition decompos
 src/chart.js      the dyad's chart recorder. Reads state, draws pixels, owns no logic.
 src/plot.js       population curves, distribution ribbon, role scatter. Also no logic.
 src/app.js        wiring for the dyad
-src/lab.js        wiring for the four acts and the laboratory
-test/model.test.js, test/population.test.js, test/research.test.js
+src/simple.js     every word of the simple register, and nothing else
+src/lab.js        wiring for the four acts, the laboratory, and the register switch
+test/model.test.js, test/population.test.js, test/simple.test.js, test/research.test.js
 ```
 
 ## Foundational reading

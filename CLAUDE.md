@@ -85,6 +85,20 @@ a description of mechanisms already implemented by the app. Keep that distinctio
 the guide, with the complete URL visible as its own link text. `test/research.test.js` enforces
 that correspondence. Update the register and run the tests whenever research links change.
 
+## The simple register
+
+`src/simple.js` is a second set of words for the same page, aimed at a child, switched on by
+the control in the header or `?simple=1`. Rules that hold it together:
+
+- **It overlays, it does not replace.** The full wording is captured on first switch and put
+  back on the way out. Nothing in `population.js`, `measures.js` or either plot changes.
+- **A simpler explanation may drop detail. It may not become untrue.** The caveat that this is
+  a pretend world is in the simple register too — §13.3 does not care who is reading.
+- **`test/simple.test.js` is the style guide, enforced.** Every arm and intervention needs
+  simple copy; every slot it names must exist in `index.html`; sentences stay under 24 words;
+  a banned list keeps the jargon out; and a short list of phrases keeps it from overclaiming.
+  It has already caught a 30-word sentence. If you fight the test, fix the sentence.
+
 ## Research documents and honesty
 
 The app now cites the field guide by section. Those references are load-bearing claims: if you

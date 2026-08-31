@@ -7,6 +7,7 @@ import {
 } from './population.js';
 import { summarise, histogram, commonGround } from './measures.js';
 import { createCurvePlot, createRibbonPlot, createScatterPlot, createPeoplePlot } from './plot.js';
+import { SIMPLE_UI, SIMPLE_ARMS, SIMPLE_INTERVENTIONS, SIMPLE_TEXT, SIMPLE_HIDES } from './simple.js';
 import { makeRng } from './model.js';
 
 const $ = id => document.getElementById(id);
@@ -22,6 +23,19 @@ const traceOf = (armKey, seed, interventions = []) =>
     ...summarise(s),
     bins: histogram(s)
   })).trace;
+
+/* ---- the register: which set of words the page is speaking in ---- */
+
+let register = new URLSearchParams(location.search).get('simple') === '1' ? 'simple' : 'plain';
+const simple = () => register === 'simple';
+const ORIGINAL = {};                       // the full-version wording, kept so it can come back
+
+const armName = arm => (simple() ? SIMPLE_ARMS[arm.key].name : arm.name);
+const armVerdict = arm => (simple() ? SIMPLE_ARMS[arm.key].verdict : arm.verdict);
+const armBlurb = arm => (simple() ? SIMPLE_ARMS[arm.key].blurb : arm.blurb);
+const ivName = iv => (simple() ? SIMPLE_INTERVENTIONS[iv.key].name : iv.name);
+const ivNote = iv => (simple() ? SIMPLE_INTERVENTIONS[iv.key].note : iv.note);
+const armByKey = key => ARMS.find(a => a.key === key);
 
 const demoSeed = 3;
 const runs = Object.fromEntries(ARMS.map(a => [a.key, traceOf(a.key, demoSeed)]));
@@ -48,43 +62,61 @@ function animate() {
 }
 
 const armCharts = {};
-ARMS.forEach(arm => {
-  const btn = document.createElement('button');
-  btn.textContent = arm.name;
-  btn.dataset.arm = arm.key;
-  btn.onclick = () => reveal(arm.key);
-  $('guesses').appendChild(btn);
 
-  const fig = document.createElement('figure');
-  fig.innerHTML = `<canvas></canvas><figcaption><b>${arm.name}</b><br><span class="ref">${arm.module}</span></figcaption>`;
-  $('armCharts').appendChild(fig);
-  armCharts[arm.key] = createCurvePlot(fig.querySelector('canvas'));
-});
+function buildGuesses() {
+  $('guesses').replaceChildren();
+  $('armCharts').replaceChildren();
+  ARMS.forEach(arm => {
+    const btn = document.createElement('button');
+    btn.textContent = armName(arm);
+    btn.dataset.arm = arm.key;
+    btn.setAttribute('aria-pressed', String(arm.key === picked));
+    btn.onclick = () => reveal(arm.key);
+    $('guesses').appendChild(btn);
 
-function reveal(picked) {
-  revealed = true;
-  shown = STEPS;
-  drawChallenge();
-  [...$('guesses').children].forEach(b =>
-    b.setAttribute('aria-pressed', String(b.dataset.arm === picked)));
+    const fig = document.createElement('figure');
+    fig.innerHTML = `<canvas></canvas><figcaption><b>${armName(arm)}</b>` +
+      (simple() ? '' : `<br><span class="ref">${arm.module}</span>`) + '</figcaption>';
+    $('armCharts').appendChild(fig);
+    armCharts[arm.key] = createCurvePlot(fig.querySelector('canvas'));
+  });
+}
 
-  const arm = ARMS.find(a => a.key === picked);
-  const right = picked === truth;
-  $('revealText').innerHTML = right
-    ? `<b>You were right — and that is the problem.</b> This line did come from ` +
-      `“${arm.name.toLowerCase()}”. But the other two answers produce it just as well, so being ` +
-      `right here was not something the chart could have told you.`
-    : `<b>Not wrong, exactly.</b> This particular line came from ` +
-      `“${ARMS.find(a => a.key === truth).name.toLowerCase()}” — but “${arm.name.toLowerCase()}” ` +
-      `produces the same line, and so does the third answer. All three are below.`;
+let picked = null;
 
-  $('reveal').hidden = false;
+function renderReveal() {
+  if (!picked) return;
+  const arm = armByKey(picked);
+  const truthArm = armByKey(truth);
+  const others = ARMS.filter(a => a.key !== picked);
+  $('revealText').innerHTML = simple()
+    ? (picked === truth
+        ? SIMPLE_TEXT.revealRight(armName(arm), armName(others[0]), armName(others[1]))
+        : SIMPLE_TEXT.revealWrong(armName(arm), armName(truthArm)))
+    : (picked === truth
+        ? `<b>You were right — and that is the problem.</b> This line did come from ` +
+          `“${arm.name.toLowerCase()}”. But the other two answers produce it just as well, so ` +
+          `being right here was not something the chart could have told you.`
+        : `<b>Not wrong, exactly.</b> This particular line came from ` +
+          `“${truthArm.name.toLowerCase()}” — but “${arm.name.toLowerCase()}” produces the same ` +
+          `line, and so does the third answer. All three are below.`);
   ARMS.forEach(a => {
     armCharts[a.key].draw([
       { points: distances(truth), colour: '--grid-strong', dim: true },
       { points: distances(a.key), colour: COLOUR[a.key] }
     ], { maxT: STEPS, maxY: 0.46 });
   });
+}
+
+function reveal(choice) {
+  picked = choice;
+  revealed = true;
+  shown = STEPS;
+  drawChallenge();
+  [...$('guesses').children].forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.arm === picked)));
+  renderReveal();
+  $('reveal').hidden = false;
   $('act2').hidden = false;
   $('act3').hidden = false;
   buildPeople();
@@ -111,8 +143,8 @@ function buildPeople() {
   ARMS.forEach(arm => {
     const fig = document.createElement('figure');
     fig.innerHTML = `<canvas class="people"></canvas><figcaption>` +
-      `<b style="color:var(${COLOUR[arm.key]})">${arm.name}</b><br>` +
-      `<span class="verdict">${arm.verdict}</span> ${arm.blurb}</figcaption>`;
+      `<b style="color:var(${COLOUR[arm.key]})">${armName(arm)}</b><br>` +
+      `<span class="verdict">${armVerdict(arm)}</span> ${armBlurb(arm)}</figcaption>`;
     $('peopleCharts').appendChild(fig);
     peoplePlots[arm.key] = createPeoplePlot(fig.querySelector('canvas'));
   });
@@ -164,6 +196,11 @@ function groundSentence() {
   const pc = v => Math.round(v * 100) + '%';
   const start = at(ARMS[0].key, 0);
   const ends = Object.fromEntries(ARMS.map(a => [a.key, at(a.key, STEPS)]));
+  if (simple()) {
+    $('groundLine').innerHTML =
+      SIMPLE_TEXT.ground(pc(start), pc(ends.reciprocal), pc(ends.exit), pc(ends.sorting));
+    return;
+  }
   $('groundLine').innerHTML =
     `<b>How much ground they still share.</b> All three crowds began with ${pc(start)} of their ` +
     `range in common. Ninety cycles later: <b>${pc(ends.reciprocal)}</b> where they pushed each ` +
@@ -195,7 +232,7 @@ const ROWS = [
 function buildPanel() {
   const head = document.createElement('tr');
   head.innerHTML = '<th></th>' + ARMS.map(a =>
-    `<th style="color:var(${COLOUR[a.key]})">${a.name}</th>`).join('');
+    `<th style="color:var(${COLOUR[a.key]})">${armName(a)}</th>`).join('');
   $('panelBody').replaceChildren(head);
 
   ROWS.forEach(row => {
@@ -237,13 +274,17 @@ ARMS.forEach(arm => {
 });
 
 let chosenIv = 'answer';
-INTERVENTIONS.forEach(iv => {
-  const btn = document.createElement('button');
-  btn.textContent = iv.name;
-  btn.dataset.iv = iv.key;
-  btn.onclick = () => { chosenIv = iv.key; runIntervention(); };
-  $('ivButtons').appendChild(btn);
-});
+
+function buildIvButtons() {
+  $('ivButtons').replaceChildren();
+  INTERVENTIONS.forEach(iv => {
+    const btn = document.createElement('button');
+    btn.textContent = ivName(iv);
+    btn.dataset.iv = iv.key;
+    btn.onclick = () => { chosenIv = iv.key; runIntervention(); };
+    $('ivButtons').appendChild(btn);
+  });
+}
 $('ivAt').addEventListener('input', e => { $('livAt').textContent = e.target.value; runIntervention(); });
 
 function runIntervention() {
@@ -267,9 +308,17 @@ function runIntervention() {
     cell.className = 'pct ' + (pct < -0.15 ? 'good' : pct > 0.02 ? 'bad' : 'nil');
   });
 
-  const worked = effects.filter(e => e.pct < -0.15).map(e => ARMS.find(a => a.key === e.key).name);
-  const backfired = effects.filter(e => e.pct > 0.02).map(e => ARMS.find(a => a.key === e.key).name);
+  const worked = effects.filter(e => e.pct < -0.15).map(e => armName(armByKey(e.key)));
+  const backfired = effects.filter(e => e.pct > 0.02).map(e => armName(armByKey(e.key)));
   let verdict;
+  if (simple()) {
+    verdict = backfired.length ? SIMPLE_TEXT.backfired(backfired[0])
+      : worked.length === 0 ? SIMPLE_TEXT.nothing
+      : worked.length === ARMS.length ? SIMPLE_TEXT.everything
+      : SIMPLE_TEXT.worked(worked[0]);
+    $('ivNote').innerHTML = `<b>${ivName(iv)}.</b> ${ivNote(iv)} ${verdict}`;
+    return;
+  }
   if (backfired.length) {
     verdict = `It made things <b>worse</b> for “${backfired[0].toLowerCase()}”. Contact is not ` +
       'automatically benign: unstructured exposure to people you already read as hostile can ' +
@@ -456,6 +505,42 @@ $('pShare').onclick = async () => {
 
 function publish() { /* the lab shares on demand rather than on every drag */ }
 
+/* ---- switching register ---- */
+
+function applyRegister() {
+  document.body.classList.toggle('simple', simple());
+  for (const [id, text] of Object.entries(SIMPLE_UI)) {
+    const el = $(id);
+    if (!el) continue;
+    if (ORIGINAL[id] === undefined) ORIGINAL[id] = el.innerHTML;
+    el.innerHTML = simple() ? text : ORIGINAL[id];
+  }
+  for (const id of SIMPLE_HIDES) $(id).hidden = simple();
+  [...$('register').children].forEach(b =>
+    b.setAttribute('aria-pressed', String((b.dataset.mode === 'simple') === simple())));
+
+  buildGuesses();
+  buildIvButtons();
+  if (revealed) {
+    renderReveal();
+    buildPeople();
+    drawPeople();
+    groundSentence();
+    buildPanel();
+    runIntervention();
+  }
+  const url = new URL(location.href);
+  if (simple()) url.searchParams.set('simple', '1'); else url.searchParams.delete('simple');
+  history.replaceState(null, '', url);
+}
+
+$('register').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  register = btn.dataset.mode;
+  applyRegister();
+});
+
 /* ---- view switch ---- */
 
 $('views').addEventListener('click', e => {
@@ -490,5 +575,6 @@ if (fromUrl) {
 }
 syncLab();
 labReset(false);
+applyRegister();
 drawChallenge();
 animate();

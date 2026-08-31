@@ -169,3 +169,21 @@
   details#panelDetails summary:hover{color:var(--ink)}
   details#panelDetails[open] summary{margin-bottom:8px;color:var(--ink)}
   #groundLine{margin-top:14px}
+
+  /* ---- the simple register ---- */
+  .seg.register{max-width:320px;margin:0 0 14px}
+  .seg.register button{padding:7px 4px;font-size:12.5px}
+  body.simple{max-width:660px}
+  body.simple .sub{font-size:16px;line-height:1.6;color:var(--ink);max-width:44ch}
+  body.simple .act h2{font-size:24px}
+  body.simple .lede,body.simple .caption{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:46ch}
+  body.simple .ask{font-size:18px}
+  body.simple .guesses button{font-size:15px;padding:12px 14px}
+  body.simple .diagnosis{font-size:17px;line-height:1.55}
+  body.simple .triptych figcaption{font-size:13px;line-height:1.5}
+  body.simple .verdict{font-size:14px}
+  body.simple .note{font-size:13.5px;line-height:1.6}
+  body.simple .ref{display:none}
+  body.simple footer{font-size:13.5px;line-height:1.6}
+  body.simple .row.tight button{font-size:14px;padding:9px 13px}
+  body.simple .hint{font-size:13px}
