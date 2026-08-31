@@ -95,6 +95,31 @@ The first meaningful choice should fit in the first viewport on a typical phone.
 Bateson explanation can sit in a clearly labelled “About the idea” disclosure near the hero;
 it should not delay the mystery.
 
+## One machine, two registers
+
+The current `main` branch includes **Explain it simply**, a second set of words aimed at a
+younger reader. Treat this as a first-class mode of the same exhibit, not as a junior skin or a
+separate product.
+
+- Keep the charts, numbers, group encoding, timing and underlying geometry identical in both
+  registers. The visual continuity is evidence that the model did not change.
+- Put the register switch in the hero as a prominent two-position instrument control. It must
+  be keyboard operable, linkable through `?simple=1` and understandable before either version
+  has been read.
+- Let the simple register use its current larger type, shorter lines and hidden laboratory.
+  It may also surface mechanism pictograms more prominently, but it must not introduce cartoon
+  faces, childish colours or simplified data.
+- Use the same theory tickets and mechanism machines with the simpler names supplied by
+  `src/simple.js`. A switch between registers should not move the user's place in the story or
+  reset a run.
+- Hide research chips and advanced controls in the simple register as the code already does;
+  keep the pretend-world caveat visually prominent.
+- Test both registers at every responsive breakpoint. The longer label in either register—not
+  the convenient one—sets the component size.
+
+The product lockup can change from **SCHISMO** to **THE SPLITTING GAME** in the simple register,
+but the small descriptor should still say that both names refer to the same simulator.
+
 ## Brand treatment
 
 ### Name
@@ -442,8 +467,10 @@ The visual redesign should not alter the model. Each phase can ship independentl
 
 1. Introduce the new colour, type, radius, spacing and depth tokens in `styles.css`.
 2. Widen the shell and rebuild the hero/act bays responsively.
-3. Restyle buttons, segmented controls, tables, details and sliders with accessible states.
+3. Restyle the full/simple register switch, buttons, segmented controls, tables, details and
+   sliders with accessible states.
 4. Switch all chart canvases to the dark plot surface and raise label/line sizes.
+5. Verify both copy registers before treating the new shell as complete.
 
 This phase alone should remove the Claude/editorial resemblance.
 
@@ -482,7 +509,8 @@ The direction is working when:
   greyscale and common colour-vision simulations;
 - a new user can start, pause, rerun and change one mechanism without reading the field guide;
 - an expert can still find every parameter, seed, exact measure and research caveat;
+- the full and simple registers feel like two explanations of the same machine, preserve the
+  user's current state when switched and both work from a shareable URL;
 - no functional text is smaller than 13 px and ordinary reading text is at least 16 px;
 - the app remains dependency-free at runtime, responsive and fully keyboard operable; and
 - the model outputs and existing automated tests are unchanged.
-
