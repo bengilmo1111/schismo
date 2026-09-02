@@ -45,7 +45,9 @@ adding a single undifferentiated “polarization” slider.
 ## The four acts
 
 1. **What made this happen?** One curve, three plain-language answers, and a reveal that all
-   three produce it. The three runs share a starting population and were *fitted* to the same
+   three produce it. The answer locks once given — being able to click all three until one
+   said "you were right" made the reveal's own copy false. Acts 2 to 4 stay closed until you
+   answer, so nobody scrolls past the question straight into a wall of sliders. The three runs share a starting population and were *fitted* to the same
    curve; nothing makes them coincide on their own, and the app says so. This is §13.1's
    equifinality — "the pattern is not the mechanism" — made concrete.
 2. **What would have told them apart.** The same three runs replayed **with the people left

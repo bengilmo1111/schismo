@@ -27,6 +27,7 @@ const traceOf = (armKey, seed, interventions = []) =>
 /* ---- the register: which set of words the page is speaking in ---- */
 
 let register = new URLSearchParams(location.search).get('simple') === '1' ? 'simple' : 'plain';
+const labLinked = new URLSearchParams(location.search).has('lab');
 const simple = () => register === 'simple';
 const ORIGINAL = {};                       // the full-version wording, kept so it can come back
 
@@ -71,6 +72,9 @@ function buildGuesses() {
     btn.textContent = armName(arm);
     btn.dataset.arm = arm.key;
     btn.setAttribute('aria-pressed', String(arm.key === picked));
+    // One answer only. Being able to click all three until one says "you were right" would
+    // make the reveal's copy false and hand away the puzzle for nothing.
+    btn.disabled = revealed;
     btn.onclick = () => reveal(arm.key);
     $('guesses').appendChild(btn);
 
@@ -109,16 +113,20 @@ function renderReveal() {
 }
 
 function reveal(choice) {
+  if (revealed) return;
   picked = choice;
   revealed = true;
   shown = STEPS;
   drawChallenge();
-  [...$('guesses').children].forEach(b =>
-    b.setAttribute('aria-pressed', String(b.dataset.arm === picked)));
+  [...$('guesses').children].forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.arm === picked));
+    b.disabled = true;
+  });
   renderReveal();
   $('reveal').hidden = false;
   $('act2').hidden = false;
   $('act3').hidden = false;
+  syncLab();
   buildPeople();
   playPeople();
   groundSentence();
@@ -412,7 +420,7 @@ function labDraw() {
   for (const f of frames) for (let i = 0; i < f.xs.length; i++) reach = Math.max(reach, Math.abs(f.xs[i]));
   const lim = reach * 1.1;
   ribbon.draw(frames.map(f => ({ ...f, bins: histogram({ x: f.xs, n: f.xs.length }, 46, -lim, lim) })),
-    { lo: -lim, hi: lim });
+    { lo: -lim, hi: lim, span: STEPS + 1 });
   curve.draw([
     ...ghosts.map(points => ({ points, colour: '--ink-soft', dim: true })),
     { points: frames.map(f => f.distance), colour: '--reached' }
@@ -472,14 +480,14 @@ MODULES.forEach(mod => {
   btn.onclick = () => {
     controls = { ...DEMO_BASE, ...mod.set };
     labRngFn = makeRng(labSeed + 7919);
-    syncLab();
+    syncLabControls();
     labReset(false);
     setLabRunning(true);
   };
   $('modules').appendChild(btn);
 });
 
-function syncLab() {
+function syncLabControls() {
   SLIDERS.forEach(([key]) => {
     $(`pc-${key}`).value = controls[key];
     $(`pl-${key}`).textContent = num(controls[key]);
@@ -507,6 +515,16 @@ function publish() { /* the lab shares on demand rather than on every drag */ }
 
 /* ---- switching register ---- */
 
+// The laboratory is for people who have been through the argument. Before that it is a wall
+// of sliders with jargon on them, and it used to be the next thing after the question.
+function syncLab() {
+  const hiddenBySimple = SIMPLE_HIDES.includes('lab') && simple();
+  // A shared ?lab= link is a deep link to a configuration; it should not land on the gate.
+  const open = revealed || labLinked;
+  $('lab').hidden = hiddenBySimple || !open;
+  $('labLocked').hidden = open || hiddenBySimple;
+}
+
 function applyRegister() {
   document.body.classList.toggle('simple', simple());
   for (const [id, text] of Object.entries(SIMPLE_UI)) {
@@ -515,7 +533,7 @@ function applyRegister() {
     if (ORIGINAL[id] === undefined) ORIGINAL[id] = el.innerHTML;
     el.innerHTML = simple() ? text : ORIGINAL[id];
   }
-  for (const id of SIMPLE_HIDES) $(id).hidden = simple();
+  syncLab();
   [...$('register').children].forEach(b =>
     b.setAttribute('aria-pressed', String((b.dataset.mode === 'simple') === simple())));
 
@@ -573,7 +591,7 @@ if (fromUrl) {
     }
   }
 }
-syncLab();
+syncLabControls();
 labReset(false);
 applyRegister();
 drawChallenge();

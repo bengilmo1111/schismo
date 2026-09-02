@@ -18,16 +18,17 @@ export const SIMPLE_UI = {
   introB:
     'This page is a game about that. It starts with a question. You will probably get it ' +
     'wrong, and that is the best bit.',
-  act1h: 'What made them split up?',
+  act1h: '1 · What made them split up?',
   act1cap:
     'This line shows two groups getting further apart, year after year. That is all it shows. ' +
     'The numbers on the side do not mean anything on their own.',
   act1ask: 'Have a guess. What do you think happened?',
+  labLocked: 'Have a guess above, and the rest of the page opens up.',
   revealNote:
     'All three of these were set up on purpose to draw the same line. That is not a trick, it ' +
     'is the point. If three different stories make the same line, then the line cannot tell ' +
     'you which one really happened.',
-  act2h: 'Now look at the people',
+  act2h: '2 · Now look at the people',
   act2lede:
     'The line squashed 240 people down into one dot a year. Here are the same three stories ' +
     'with the people put back in. Watch what is different in each one.',
@@ -35,7 +36,7 @@ export const SIMPLE_UI = {
     'Red dots live up top. Blue dots live below. Each dot is a person. The faint threads are ' +
     'people who still talk to someone on the other side.',
   panelSummary: 'Show me the numbers',
-  act3h: 'Can you fix it?',
+  act3h: '3 · Can you fix it?',
   act3lede:
     'Now try the same fix on all three at once. Watch how a fix that works on one of them ' +
     'does nothing at all to the others.',
@@ -111,3 +112,4 @@ export const SIMPLE_TEXT = {
 
 /** Sections that are hidden while the simple register is on. */
 export const SIMPLE_HIDES = ['lab'];
+

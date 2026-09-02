@@ -106,6 +106,11 @@ change a mechanism, check the section still says what the copy says it says. Two
 come from §13.3 — never present a stylised scenario as a prediction about real people, and
 remember that a fixed "polarised" threshold encodes somebody's preferred centre.
 
+The question in Act 1 takes one answer and then locks, and the rest of the page stays shut
+until it is answered. Both are load-bearing: an unlocked question lets a visitor brute-force
+the reveal until it congratulates them, and an open laboratory means the first thing after the
+question is fourteen sliders with jargon on them. A shared `?lab=` link bypasses the gate.
+
 Act 1 is fitted, and says so. The three arms were tuned to produce the same curve; that
 disclosure is not optional decoration, it is what keeps the demonstration honest.
 

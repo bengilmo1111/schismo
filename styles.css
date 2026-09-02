@@ -187,3 +187,10 @@
   body.simple footer{font-size:13.5px;line-height:1.6}
   body.simple .row.tight button{font-size:14px;padding:9px 13px}
   body.simple .hint{font-size:13px}
+
+  .locked{font-size:13px;color:var(--ink-soft);border-top:1px solid var(--grid);
+    padding-top:16px;margin:22px 0 0;line-height:1.5;max-width:56ch;font-style:italic}
+  .locked[hidden]{display:none}
+  .guesses button[disabled]{cursor:default;opacity:1}
+  .guesses button[disabled]:not([aria-pressed="true"]){opacity:.45}
+  body.simple .locked{font-size:15px}

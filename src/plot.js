@@ -100,7 +100,10 @@ export function createRibbonPlot(canvas) {
     const lo = opts.lo ?? -2.5;
     const hi = opts.hi ?? 2.5;
     const Y = v => h - ((v - lo) / (hi - lo)) * h;
-    const cw = Math.max(1, w / frames.length);
+    // Column width comes from how long the run will be, not from how much of it has happened,
+    // so the paper fills left to right. Dividing by frames.length made the very first frame a
+    // full-width block of stripes that read as a broken chart.
+    const cw = Math.max(1, w / Math.max(frames.length, opts.span || frames.length));
     const ink = colour('--ribbon');
 
     frames.forEach((f, i) => {
