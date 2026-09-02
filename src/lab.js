@@ -5,7 +5,7 @@ import {
   ARMS, armControls, DEMO_BASE, INTERVENTIONS, interventionAt,
   runPopulation, createPopulation, stepPopulation, gains
 } from './population.js';
-import { summarise, histogram, commonGround } from './measures.js';
+import { summarise, histogram, commonGround, overlapRange } from './measures.js';
 import { createCurvePlot, createRibbonPlot, createScatterPlot, createPeoplePlot } from './plot.js';
 import { SIMPLE_UI, SIMPLE_ARMS, SIMPLE_INTERVENTIONS, SIMPLE_TEXT, SIMPLE_HIDES } from './simple.js';
 import { makeRng } from './model.js';
@@ -13,7 +13,15 @@ import { makeRng } from './model.js';
 const $ = id => document.getElementById(id);
 const STEPS = 90;
 const N = 240;
-const COLOUR = { reciprocal: '--pen-a', sorting: '--pen-b', exit: '--pen-c' };
+// The three stories have their own accents, separate from the group colours: they are
+// different things and used to share one token. Each also gets a shape and a dash, so the
+// small charts are readable without colour.
+const COLOUR = { reciprocal: '--mech-1', sorting: '--mech-2', exit: '--mech-3' };
+// The bright mark colours are for marks on the dark board. Text on a light surface uses the
+// darker variants, or it fails contrast outright.
+const INK = { reciprocal: '--mech-1-ink', sorting: '--mech-2-ink', exit: '--mech-3-ink' };
+const SHAPE = { reciprocal: 'circle', sorting: 'diamond', exit: 'square' };
+const DASH = { reciprocal: [], sorting: [8, 5], exit: [2, 4] };
 const num = (v, p = 2) => (Number(v.toFixed(p)) === 0 ? (0).toFixed(p) : v.toFixed(p));
 
 /* ---- runs ---- */
@@ -50,16 +58,16 @@ let shown = 0;
 let revealed = false;
 
 function drawChallenge() {
-  challenge.draw([{ points: distances(truth), colour: '--ink', upTo: shown }],
+  challenge.draw([{ points: distances(truth), colour: '--action', upTo: shown }],
     { maxT: STEPS, maxY: 0.46, xLabel: 'election cycles' });
 }
 
-function animate() {
-  if (shown < STEPS) {
-    shown += 1;
-    drawChallenge();
-    requestAnimationFrame(animate);
-  }
+// The curve is the question, so it is drawn complete rather than animated in. The art
+// direction's accessibility rule is that nothing moves before the reader has seen the
+// question, and a progressively drawn line was decoration standing in front of it.
+function showChallenge() {
+  shown = STEPS;
+  drawChallenge();
 }
 
 const armCharts = {};
@@ -107,7 +115,7 @@ function renderReveal() {
   ARMS.forEach(a => {
     armCharts[a.key].draw([
       { points: distances(truth), colour: '--grid-strong', dim: true },
-      { points: distances(a.key), colour: COLOUR[a.key] }
+      { points: distances(a.key), colour: COLOUR[a.key], shape: SHAPE[a.key], dash: DASH[a.key] }
     ], { maxT: STEPS, maxY: 0.46 });
   });
 }
@@ -151,7 +159,7 @@ function buildPeople() {
   ARMS.forEach(arm => {
     const fig = document.createElement('figure');
     fig.innerHTML = `<canvas class="people"></canvas><figcaption>` +
-      `<b style="color:var(${COLOUR[arm.key]})">${armName(arm)}</b><br>` +
+      `<b style="color:var(${INK[arm.key]})">${armName(arm)}</b><br>` +
       `<span class="verdict">${armVerdict(arm)}</span> ${armBlurb(arm)}</figcaption>`;
     $('peopleCharts').appendChild(fig);
     peoplePlots[arm.key] = createPeoplePlot(fig.querySelector('canvas'));
@@ -167,7 +175,8 @@ function resetPeople() {
   drawPeople();
 }
 
-const drawPeople = () => crowds.forEach(c => peoplePlots[c.key].draw(c.state, { lim: PEOPLE_LIM }));
+const drawPeople = () => crowds.forEach(c =>
+  peoplePlots[c.key].draw(c.state, { lim: PEOPLE_LIM, band: overlapRange(c.state) }));
 
 let peopleTick = 0;
 function peopleFrame() {
@@ -240,7 +249,7 @@ const ROWS = [
 function buildPanel() {
   const head = document.createElement('tr');
   head.innerHTML = '<th></th>' + ARMS.map(a =>
-    `<th style="color:var(${COLOUR[a.key]})">${armName(a)}</th>`).join('');
+    `<th style="color:var(${INK[a.key]})">${armName(a)}</th>`).join('');
   $('panelBody').replaceChildren(head);
 
   ROWS.forEach(row => {
@@ -309,7 +318,7 @@ function runIntervention() {
     effects.push({ key: arm.key, pct });
     ivCharts[arm.key].plot.draw([
       { points: base, colour: '--grid-strong', dim: true },
-      { points: after, colour: COLOUR[arm.key] }
+      { points: after, colour: COLOUR[arm.key], shape: SHAPE[arm.key], dash: DASH[arm.key] }
     ], { maxT: STEPS, maxY: 0.46, markT: at });
     const cell = ivCharts[arm.key].pct;
     cell.textContent = `${pct > 0 ? '+' : ''}${Math.round(pct * 100)}%`;
@@ -594,5 +603,4 @@ if (fromUrl) {
 syncLabControls();
 labReset(false);
 applyRegister();
-drawChallenge();
-animate();
+showChallenge();

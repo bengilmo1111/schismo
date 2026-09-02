@@ -14,13 +14,17 @@
     <button data-mode="simple">Explain it simply</button>
   </div>
   <h1 id="pageTitle">Schismogenesis</h1>
-  <p class="sub" id="introA">Gregory Bateson's word for what happens when two sides keep reacting to each
-  other until the reacting itself is what drives them apart. A couple where one nags and the
-  other withdraws. Two neighbours outdoing each other's fences. Two parties answering every
-  move with a slightly bigger one. The pattern is the same in all three, and nobody caught in
-  it has to intend where it ends up.</p>
-  <p class="sub" id="introB">Below is a small simulation of that. It takes a few minutes, and it starts
-  with a question you will probably get wrong — which is the point.</p>
+  <p class="sub" id="introA">Gregory Bateson's word for what happens when two sides keep reacting
+  to each other until the reacting itself is what drives them apart.</p>
+  <details class="about">
+    <summary id="introMore">Three everyday versions</summary>
+    <p class="sub" id="introExamples">A couple where one nags and the other withdraws. Two
+    neighbours outdoing each other's fences. Two parties answering every move with a slightly
+    bigger one. The pattern is the same in all three, and nobody caught in it has to intend
+    where it ends up.</p>
+  </details>
+  <p class="sub" id="introB">Below is a small simulation of it. It starts with a question you
+  will probably get wrong, which is the point.</p>
 </header>
 
 <section class="act" id="act1">
@@ -28,11 +32,12 @@
   <div class="recorder">
     <canvas id="challenge" class="tall"></canvas>
   </div>
+  <p class="ask" id="act1ask">Before you scroll: what would you say caused it?</p>
+  <div class="row tight guesses" id="guesses"></div>
   <p class="caption" id="act1cap">Distance between two groups, over thirty election cycles. One run, one
   number, the shape a news graphic would show you. The units are arbitrary, which is worth
   noticing in itself: the line goes up, and that is the whole of what it tells you.</p>
-  <p class="ask" id="act1ask">Before you scroll: what would you say caused it?</p>
-  <div class="row tight guesses" id="guesses"></div>
+
 
   <div id="reveal" hidden>
     <p class="diagnosis" id="revealText"></p>

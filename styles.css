@@ -1,196 +1,298 @@
+/* The Divergence Machine — Phase 1 of docs/art-direction.md, with the amendments in
+   the plan: a non-political group pair, one type stack rather than three families, and a
+   wide shell with a narrow reading column.
+
+   Every colour lives here. chart.js and plot.js read these tokens through getComputedStyle
+   and own none of them. */
+
 :root{
-    --paper:#EAEBE3;
-    --paper-dark:#DEE0D5;
-    --grid:#C8CBBB;
-    --grid-strong:#B3B7A3;
-    --ink:#23261F;
-    --ink-soft:#5E6356;
-    --pen-a:#8C2F27;
-    --pen-b:#1F4E79;
-    --rupture:#6B4E12;
-    --pen-c:#5B5320;
-    --ribbon:#6B4E12;
-    --reached:#4A6B3A;
-    --gap:rgba(107,78,18,.10);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
-    -webkit-font-smoothing:antialiased;}
-  body{padding:18px 16px 40px;max-width:640px;margin:0 auto;}
+  /* surfaces */
+  --page:#DFF4EE;          /* cool mint, deliberately not parchment */
+  --surface:#FFFDF5;       /* warm white experiment bays */
+  --plot:#11182B;          /* every chart is an instrument on a dark board */
+  --plot-grid:#34405C;
 
-  header{margin-bottom:14px}
-  h1{font-family:Georgia,"Iowan Old Style",serif;font-weight:400;
-     font-size:29px;line-height:1.1;letter-spacing:-.01em;margin:0 0 6px}
-  .sub{font-size:13.5px;line-height:1.5;color:var(--ink-soft);max-width:56ch;margin:0 0 9px}
-  .sub:last-child{margin-bottom:0}
+  /* ink */
+  --ink:#111827;
+  --ink-soft:#4A5568;      /* 7.4:1 on --surface */
+  --on-plot:#E8ECF5;
+  --on-plot-soft:#98A3BD;
 
-  /* ---- chart recorder ---- */
-  .recorder{position:relative;border:1px solid var(--grid-strong);
-    background:var(--paper-dark);border-radius:2px;overflow:hidden;margin:16px 0 10px}
-  canvas{display:block;width:100%;height:230px}
-  .pens{display:flex;gap:16px;padding:7px 10px;border-top:1px solid var(--grid);
-    font-size:12.5px;color:var(--ink-soft);align-items:baseline;flex-wrap:wrap}
-  .pen{display:flex;align-items:center;gap:6px}
-  .nib{width:13px;height:2px;border-radius:1px}
-  .val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
-  .tick{margin-left:auto;font-variant-numeric:tabular-nums}
+  /* Groups. Teal and amber sit on the blue-yellow axis, which the red-green deficiencies
+     preserve, and neither carries a party association. Shape carries the meaning too:
+     A is a circle and a solid line, B is a diamond and a dashed one. */
+  --group-a:#34E0E0;  --group-a-ink:#0A6E73;
+  --group-b:#F5A623;  --group-b-ink:#8A5200;
 
-  /* ---- diagnosis ---- */
-  .diagnosis{font-family:Georgia,serif;font-size:15.5px;line-height:1.45;
-    padding:11px 13px;border-left:3px solid var(--ink);background:rgba(255,255,255,.42);
-    margin-bottom:16px}
-  .diagnosis b{font-weight:600}
+  /* The three stories. Separate tokens from the groups: they are different things and used
+     to share one variable. Worst-case simulated separation between any pair is dE 31. */
+  --mech-1:#34E0E0;   --mech-1-ink:#0A6E73;
+  --mech-2:#F5A623;   --mech-2-ink:#8A5200;
+  --mech-3:#9AA8FF;   --mech-3-ink:#3B47A0;
 
-  .gauges{display:flex;gap:10px;margin-bottom:14px}
-  .gauge{flex:1;padding:9px 11px;border:1px solid var(--grid);background:rgba(255,255,255,.34);
-    min-width:0}
-  .gauge h3{margin:0 0 5px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
-  .gauge .num{font-family:Georgia,serif;font-size:21px;font-variant-numeric:tabular-nums}
-  .gauge .state{font-size:12px;margin-top:2px}
-  .runaway{color:var(--pen-a);font-weight:600}
-  .holding{color:var(--pen-b)}
+  /* signals, each reserved for one job */
+  --shared:#B7E64A;   --shared-ink:#4A6B0F;   /* common ground, drawn rather than implied */
+  --action:#F5F3EA;                            /* playhead and selection: neutral, not a third group */
+  --rupture:#D48BFF;  --rupture-ink:#7B3FB3;   /* limits only */
 
-  /* ---- arrival clock ---- */
-  .clock{border:1px solid var(--grid);border-left:3px solid var(--reached);
-    background:rgba(255,255,255,.34);padding:10px 13px;margin-bottom:18px}
-  .clock h2{margin:0 0 5px;font-size:12.5px;font-weight:600;color:var(--ink-soft);
-    text-transform:none}
-  .clockline{margin:0;font-size:13.5px;line-height:1.5}
-  .clockline b{font-variant-numeric:tabular-nums}
-  .clockline.soft{color:var(--ink-soft);font-size:12.5px;margin-top:5px}
+  /* geometry */
+  --sp:8px;
+  --r-bay:16px; --r-ctl:11px; --r-plot:14px;
+  --lift:5px 5px 0 var(--ink);
+  --lift-ctl:0 3px 0 var(--ink);
 
-  /* ---- controls ---- */
-  .row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-  .row.tight{gap:6px;margin-bottom:10px}
-  button{font:inherit;font-size:13.5px;padding:8px 13px;border:1px solid var(--grid-strong);
-    background:rgba(255,255,255,.5);color:var(--ink);border-radius:2px;cursor:pointer}
-  button:hover{background:#fff}
-  button:focus-visible{outline:2px solid var(--pen-b);outline-offset:2px}
-  button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-  .primary{font-weight:600;min-width:82px}
-  .row.tight button{font-size:12.5px;padding:6px 10px}
+  /* names the renderers still ask for */
+  --grid:var(--plot-grid);
+  --grid-strong:var(--on-plot-soft);
+  --paper:var(--page);
+  --paper-dark:var(--plot);
+  --pen-a:var(--group-a);
+  --pen-b:var(--group-b);
+  --pen-c:var(--mech-3);
+  --reached:var(--shared);
+  --gap:rgba(232,236,245,.10);
+  --ribbon:#7FA8D6;
+}
 
-  fieldset{border:none;border-top:1px solid var(--grid);padding:14px 0 0;margin:0 0 6px}
-  legend{font-family:Georgia,serif;font-size:15px;padding-right:10px}
-  .seg{display:flex;margin:2px 0 14px;border:1px solid var(--grid-strong);border-radius:2px;overflow:hidden}
-  .seg button{flex:1;border:none;border-right:1px solid var(--grid-strong);border-radius:0;padding:9px 4px;font-size:13px}
-  .seg button:last-child{border-right:none}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0;background:var(--page);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{padding:24px 20px 64px;max-width:1100px;margin:0 auto}
 
-  label.slider{display:block;margin-bottom:13px}
-  .lab{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:3px}
-  .lab span:last-child{font-variant-numeric:tabular-nums;color:var(--ink-soft)}
-  .hint{font-size:12px;color:var(--ink-soft);margin:-9px 0 13px;line-height:1.4}
-  .hint.inline{margin:0}
-  .hint.mirror{margin:0 0 12px}
-  .hint.mirror:empty{margin:0}
-  input[type=range]{width:100%;accent-color:var(--pen-b);margin:0}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0}
+/* One unbreakable 14-letter word: the viewport width has to drive the size. */
+h1{font-size:clamp(1.75rem,8.5vw,4.2rem);text-transform:uppercase;overflow-wrap:break-word}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+a{color:var(--ink)}
 
-  .seedrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin-bottom:4px}
-  .seedrow input[type=number]{font:inherit;font-size:13px;width:82px;padding:6px 8px;
-    border:1px solid var(--grid-strong);background:rgba(255,255,255,.5);border-radius:2px;
-    color:var(--ink);font-variant-numeric:tabular-nums}
-  .seedrow button{padding:6px 10px;font-size:12.5px}
+/* Prose keeps a reading measure even though the shell is wide. */
+.sub,.lede,.caption,.note,.hint,.locked,footer p{max-width:62ch}
 
-  h3.group{margin:2px 0 7px;font-size:11.5px;font-weight:600;letter-spacing:.04em;
-    color:var(--ink-soft);text-transform:uppercase}
-  .note{font-size:12.5px;line-height:1.55;color:var(--ink-soft);
-    margin:4px 0 12px;max-width:56ch}
+header{margin-bottom:calc(var(--sp)*5)}
+.sub{font-size:1.05rem;color:var(--ink-soft);margin:0 0 12px}
+.sub:last-child{margin-bottom:0}
 
-  .log{font-size:12.5px;color:var(--ink-soft);line-height:1.6;min-height:3.2em;
-       border-top:1px solid var(--grid);padding-top:10px}
-  .log div{font-variant-numeric:tabular-nums}
-  footer{margin-top:22px;font-size:12px;color:var(--ink-soft);line-height:1.55;
-    border-top:1px solid var(--grid);padding-top:12px}
-  footer p{margin:0 0 9px;max-width:60ch}
-  footer p:last-child{margin-bottom:0}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- experiment bays ---- */
+.act{background:var(--surface);border:3px solid var(--ink);border-radius:var(--r-bay);
+  box-shadow:var(--lift);padding:calc(var(--sp)*3) calc(var(--sp)*3.5);
+  margin:0 0 calc(var(--sp)*7)}
+.act h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 0 12px}
+.lede{color:var(--ink-soft);margin:0 0 16px}
+.caption{font-size:.88rem;color:var(--ink-soft);margin:10px 0 20px}
+.ask{font-size:1.2rem;font-weight:700;margin:0 0 12px}
+.note{font-size:.88rem;color:var(--ink-soft);line-height:1.6;margin:12px 0}
+.hint{font-size:.85rem;color:var(--ink-soft);line-height:1.5;margin:0 0 14px}
+.hint.inline{margin:0}
+.hint.mirror{margin:0 0 14px}
+.hint.mirror:empty{margin:0}
+/* Research references stay available and visually secondary. */
+.ref{font-variant-numeric:tabular-nums;color:var(--ink-soft);opacity:.72;font-size:.85rem}
 
-  /* ---- acts ---- */
-  body{max-width:720px}
-  .act{border-top:1px solid var(--grid);padding-top:16px;margin-top:22px}
-  .act:first-of-type{border-top:none;padding-top:0;margin-top:18px}
-  .act h2{font-family:Georgia,serif;font-weight:400;font-size:21px;margin:0 0 8px;line-height:1.2}
-  .lede{font-size:13.5px;line-height:1.55;color:var(--ink-soft);max-width:60ch;margin:0 0 12px}
-  .caption{font-size:12px;color:var(--ink-soft);margin:6px 0 14px;line-height:1.45}
-  .ask{font-family:Georgia,serif;font-size:16px;margin:0 0 9px}
-  .ref{font-variant-numeric:tabular-nums;color:var(--grid-strong);font-size:.82em;
-    letter-spacing:.01em}
-  canvas.tall{height:250px}
+/* ---- instrument boards ---- */
+.recorder{background:var(--plot);border:3px solid var(--ink);border-radius:var(--r-plot);
+  overflow:hidden;margin:0 0 12px}
+canvas{display:block;width:100%;height:250px;background:var(--plot)}
+canvas.tall{height:300px}
+.pens{display:flex;gap:20px;padding:10px 14px;border-top:2px solid var(--ink);
+  background:var(--surface);font-size:.85rem;color:var(--ink-soft);
+  align-items:center;flex-wrap:wrap}
+.pen{display:flex;align-items:center;gap:7px;font-weight:600;color:var(--ink)}
+/* The legend repeats the shape, not just the colour. */
+.nib{width:14px;height:14px;border:2px solid var(--ink);flex:none}
+.pen:first-of-type .nib{border-radius:50%}
+.pen:nth-of-type(2) .nib{transform:rotate(45deg)}
+.val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;
+  color:var(--ink);font-weight:700}
+.tick{margin-left:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-variant-numeric:tabular-nums;font-size:.85rem}
 
-  .guesses button{flex:1;min-width:150px;text-align:left;line-height:1.3;padding:10px 12px}
+/* ---- readouts ---- */
+.diagnosis{font-size:1.05rem;line-height:1.5;padding:16px 18px;
+  border:2px solid var(--ink);border-left-width:8px;border-radius:var(--r-ctl);
+  background:var(--page);margin:16px 0}
+.diagnosis b{font-weight:800}
 
-  .triptych{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 10px}
-  .triptych figure{margin:0;min-width:0}
-  .triptych canvas{width:100%;height:110px;border:1px solid var(--grid);
-    background:var(--paper-dark);border-radius:2px}
-  .triptych figcaption{font-size:11.5px;line-height:1.35;color:var(--ink-soft);margin-top:5px}
-  .twoUp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-  .twoUp figure{margin:0;min-width:0}
-  .twoUp canvas{width:100%;height:150px;border:1px solid var(--grid);
-    background:var(--paper-dark);border-radius:2px}
-  .twoUp figcaption{font-size:11.5px;color:var(--ink-soft);margin-top:5px}
-  .pct{font-weight:600;font-variant-numeric:tabular-nums}
-  .pct.good{color:var(--pen-b)} .pct.bad{color:var(--pen-a)} .pct.nil{color:var(--ink-soft)}
+.gauges{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.gauge{flex:1 1 220px;padding:14px 16px;border:2px solid var(--ink);
+  border-radius:var(--r-ctl);background:var(--page);min-width:0}
+.gauge h3{margin:0 0 6px;font-size:.85rem;font-weight:700;color:var(--ink-soft);
+  text-transform:uppercase;letter-spacing:.04em}
+.gauge .num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:2rem;
+  font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.gauge .state{font-size:.85rem;margin-top:4px;font-weight:600}
+.runaway{color:var(--rupture-ink)}
+.holding{color:var(--group-a-ink)}
 
-  /* ---- the diagnostic panel ---- */
-  table.panel{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0 10px}
-  table.panel th{font-weight:600;font-size:11.5px;text-align:right;padding:5px 6px;
-    border-bottom:1px solid var(--grid-strong);line-height:1.25;vertical-align:bottom}
-  table.panel th:first-child{text-align:left}
-  table.panel td{padding:6px;border-bottom:1px solid var(--grid);text-align:right;
-    font-variant-numeric:tabular-nums}
-  table.panel td.rlab{text-align:left;color:var(--ink-soft);line-height:1.35}
-  tr.prow{cursor:pointer}
-  tr.prow:hover td,tr.prow:focus-visible td{background:rgba(255,255,255,.55)}
-  tr.prow.picked td{background:rgba(255,255,255,.72)}
-  tr.prow.picked td.rlab{color:var(--ink);font-weight:600}
-  td.odd{font-weight:700;color:var(--ink)}
-  tr.flat td{color:var(--ink-soft)}
-  table.panel.compact td{padding:4px 6px}
+.clock{border:2px solid var(--ink);border-left-width:8px;border-left-color:var(--shared-ink);
+  border-radius:var(--r-ctl);background:var(--page);padding:16px 18px;margin-bottom:20px}
+.clock h2{margin:0 0 6px;font-size:.85rem;font-weight:700;color:var(--ink-soft);
+  text-transform:uppercase;letter-spacing:.04em}
+.clockline{margin:0;font-size:1rem;line-height:1.55}
+.clockline b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.clockline.soft{color:var(--ink-soft);font-size:.9rem;margin-top:8px}
 
-  #pSliders{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
-  #pSliders label.slider{margin-bottom:10px}
+/* ---- controls: physical, not tinted ---- */
+.row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.row.tight{gap:8px;margin-bottom:14px}
+button{font:inherit;font-size:1rem;font-weight:600;min-height:44px;padding:10px 16px;
+  border:2px solid var(--ink);background:var(--surface);color:var(--ink);
+  border-radius:var(--r-ctl);cursor:pointer;box-shadow:var(--lift-ctl);
+  transition:transform .12s,box-shadow .12s,background .12s}
+button:hover:not([disabled]){background:var(--page)}
+button:active:not([disabled]){transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+button:focus-visible{outline:3px solid var(--rupture-ink);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--surface);box-shadow:0 0 0 var(--ink);
+  transform:translateY(3px)}
+button[disabled]{cursor:default;box-shadow:0 0 0 var(--ink);transform:translateY(3px)}
+.primary{background:var(--shared);min-width:104px}
+.primary:hover:not([disabled]){background:#C9F065}
+.row.tight button{font-size:.95rem;padding:9px 13px}
 
-  @media (max-width:560px){
-    #pSliders{grid-template-columns:1fr}
-    .triptych{grid-template-columns:1fr}
-    .twoUp{grid-template-columns:1fr}
-    .guesses button{min-width:100%}
-    table.panel th,table.panel td{padding:5px 3px;font-size:11.5px}
-  }
+.seg{display:flex;margin:0 0 18px;border:3px solid var(--ink);border-radius:var(--r-ctl);
+  overflow:hidden;box-shadow:var(--lift-ctl);width:fit-content;max-width:100%}
+.seg button{border:none;border-right:2px solid var(--ink);border-radius:0;box-shadow:none;
+  flex:1 1 auto;padding:11px 18px}
+.seg button:last-child{border-right:none}
+.seg button:active:not([disabled]),.seg button[aria-pressed="true"]{transform:none}
+.seg.register{margin-bottom:24px}
 
-  /* ---- the crowd ---- */
-  .triptych canvas.people{height:170px}
-  .verdict{color:var(--ink);font-weight:600}
-  details#panelDetails{margin-top:14px;border-top:1px solid var(--grid);padding-top:10px}
-  details#panelDetails summary{font-size:13px;cursor:pointer;color:var(--ink-soft);
-    padding:2px 0;list-style-position:outside}
-  details#panelDetails summary:hover{color:var(--ink)}
-  details#panelDetails[open] summary{margin-bottom:8px;color:var(--ink)}
-  #groundLine{margin-top:14px}
+/* ---- sliders ---- */
+label.slider{display:block;margin-bottom:18px}
+.lab{display:flex;justify-content:space-between;gap:16px;font-size:.95rem;
+  font-weight:600;margin-bottom:8px}
+.lab span:last-child{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-variant-numeric:tabular-nums;color:var(--ink);background:var(--page);
+  border:2px solid var(--ink);border-radius:6px;padding:1px 8px;font-size:.9rem}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;
+  background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border:2px solid var(--ink);
+  border-radius:8px;background:var(--surface)}
+input[type=range]::-moz-range-track{height:12px;border:2px solid var(--ink);
+  border-radius:8px;background:var(--surface)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:26px;height:26px;margin-top:-9px;border:2px solid var(--ink);border-radius:50%;
+  background:var(--shared);box-shadow:0 2px 0 var(--ink)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border:2px solid var(--ink);
+  border-radius:50%;background:var(--shared);box-shadow:0 2px 0 var(--ink)}
+input[type=range]:focus-visible{outline:3px solid var(--rupture-ink);outline-offset:4px}
 
-  /* ---- the simple register ---- */
-  .seg.register{max-width:320px;margin:0 0 14px}
-  .seg.register button{padding:7px 4px;font-size:12.5px}
-  body.simple{max-width:660px}
-  body.simple .sub{font-size:16px;line-height:1.6;color:var(--ink);max-width:44ch}
-  body.simple .act h2{font-size:24px}
-  body.simple .lede,body.simple .caption{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:46ch}
-  body.simple .ask{font-size:18px}
-  body.simple .guesses button{font-size:15px;padding:12px 14px}
-  body.simple .diagnosis{font-size:17px;line-height:1.55}
-  body.simple .triptych figcaption{font-size:13px;line-height:1.5}
-  body.simple .verdict{font-size:14px}
-  body.simple .note{font-size:13.5px;line-height:1.6}
-  body.simple .ref{display:none}
-  body.simple footer{font-size:13.5px;line-height:1.6}
-  body.simple .row.tight button{font-size:14px;padding:9px 13px}
-  body.simple .hint{font-size:13px}
+fieldset{border:none;border-top:3px solid var(--ink);padding:20px 0 0;margin:24px 0 0}
+legend{font-weight:800;font-size:1.1rem;padding-right:12px}
 
-  .locked{font-size:13px;color:var(--ink-soft);border-top:1px solid var(--grid);
-    padding-top:16px;margin:22px 0 0;line-height:1.5;max-width:56ch;font-style:italic}
-  .locked[hidden]{display:none}
-  .guesses button[disabled]{cursor:default;opacity:1}
-  .guesses button[disabled]:not([aria-pressed="true"]){opacity:.45}
-  body.simple .locked{font-size:15px}
+.seedrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.95rem;
+  font-weight:600;margin-bottom:8px}
+.seedrow input[type=number]{font:inherit;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  width:94px;min-height:44px;padding:8px 10px;border:2px solid var(--ink);
+  background:var(--surface);border-radius:var(--r-ctl);color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.seedrow input[type=number]:focus-visible{outline:3px solid var(--rupture-ink);outline-offset:3px}
+
+h3.group{margin:16px 0 10px;font-size:.85rem;font-weight:800;letter-spacing:.08em;
+  color:var(--ink-soft);text-transform:uppercase}
+
+.log{font-size:.85rem;color:var(--ink-soft);line-height:1.7;min-height:3em;
+  border-top:2px solid var(--ink);padding-top:12px;margin-top:16px}
+.log div{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+footer{margin-top:calc(var(--sp)*5);font-size:.88rem;color:var(--ink-soft);line-height:1.6;
+  border-top:3px solid var(--ink);padding-top:18px}
+
+/* ---- act 1 ---- */
+.guesses{gap:10px}
+.guesses button{flex:1 1 200px;text-align:left;line-height:1.35;padding:16px 18px;
+  font-size:1rem;font-weight:700}
+
+/* ---- act 2 ---- */
+.triptych{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 14px}
+.triptych figure{margin:0;min-width:0}
+.triptych canvas{width:100%;height:130px;border:3px solid var(--ink);
+  background:var(--plot);border-radius:var(--r-plot)}
+.triptych canvas.people{height:190px}
+.triptych figcaption{font-size:.88rem;line-height:1.5;color:var(--ink-soft);margin-top:10px}
+.triptych figcaption b{font-size:.95rem}
+.verdict{color:var(--ink);font-weight:800;display:block;margin:4px 0 2px}
+.twoUp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.twoUp figure{margin:0;min-width:0}
+.twoUp canvas{width:100%;height:170px;border:3px solid var(--ink);
+  background:var(--plot);border-radius:var(--r-plot)}
+.twoUp figcaption{font-size:.85rem;color:var(--ink-soft);margin-top:8px}
+.pct{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:1.05rem}
+.pct.good{color:var(--group-a-ink)}
+.pct.bad{color:var(--rupture-ink)}
+.pct.nil{color:var(--ink-soft)}
+
+/* ---- instrument readouts ---- */
+table.panel{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0 14px}
+table.panel th{font-weight:800;font-size:.85rem;text-align:right;padding:8px;
+  border-bottom:3px solid var(--ink);line-height:1.3;vertical-align:bottom}
+table.panel th:first-child{text-align:left}
+table.panel td{padding:10px 8px;border-bottom:2px solid var(--page);text-align:right;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+table.panel td.rlab{text-align:left;font-family:inherit;color:var(--ink-soft);line-height:1.4}
+tr.prow{cursor:pointer}
+tr.prow:hover td,tr.prow:focus-visible td{background:var(--page)}
+tr.prow.picked td{background:var(--page);border-bottom-color:var(--ink)}
+tr.prow.picked td.rlab{color:var(--ink);font-weight:700}
+td.odd{font-weight:700;color:var(--ink)}
+tr.flat td{color:var(--ink-soft)}
+table.panel.compact td{padding:7px 8px}
+
+details#panelDetails{margin-top:18px;border-top:3px solid var(--ink);padding-top:14px}
+details#panelDetails summary{font-size:1rem;font-weight:700;cursor:pointer;padding:6px 0;
+  min-height:44px;display:flex;align-items:center}
+details#panelDetails summary:focus-visible{outline:3px solid var(--rupture-ink);outline-offset:3px}
+
+#pSliders{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
+#groundLine{margin-top:16px}
+
+.locked{font-size:.95rem;color:var(--ink-soft);border:3px dashed var(--ink);
+  border-radius:var(--r-bay);padding:20px 24px;margin:0;line-height:1.55;background:var(--surface)}
+.locked[hidden]{display:none}
+.guesses button[disabled]{opacity:1}
+.guesses button[disabled]:not([aria-pressed="true"]){opacity:.5}
+
+/* ---- the simple register ---- */
+body.simple{max-width:840px}
+body.simple .sub{font-size:1.2rem;color:var(--ink);max-width:46ch}
+body.simple .act h2{font-size:clamp(1.7rem,4vw,2.3rem)}
+body.simple .lede,body.simple .caption{font-size:1.05rem;max-width:48ch}
+body.simple .ask{font-size:1.35rem}
+body.simple .guesses button{font-size:1.1rem;padding:18px}
+body.simple .diagnosis{font-size:1.15rem}
+body.simple .triptych figcaption{font-size:.95rem}
+body.simple .note{font-size:1rem}
+body.simple .ref{display:none}
+body.simple footer{font-size:1rem}
+
+/* ---- responsive ---- */
+@media (max-width:900px){
+  .triptych{grid-template-columns:1fr}
+  .twoUp{grid-template-columns:1fr}
+  #pSliders{grid-template-columns:1fr}
+}
+details.about{margin:0 0 12px}
+details.about summary{font-weight:700;cursor:pointer;padding:4px 0;min-height:44px;
+  display:flex;align-items:center;font-size:.95rem}
+details.about summary:focus-visible{outline:3px solid var(--rupture-ink);outline-offset:3px}
+details.about .sub{margin:8px 0 0}
+
+@media (max-width:620px){
+  body{padding:16px 16px 56px;font-size:16px}
+  header{margin-bottom:20px}
+  .act{padding:18px 16px;border-radius:12px;box-shadow:3px 3px 0 var(--ink)}
+  .act h2{font-size:1.35rem;margin-bottom:10px}
+  .ask{font-size:1.1rem}
+  /* Two long labels at fit-content push a 320px viewport sideways. */
+  .seg.register{width:100%}
+  .seg.register button{flex:1 1 0;min-width:0;padding:11px 6px;font-size:.9rem}
+  .guesses button{flex:1 1 100%}
+  table.panel th,table.panel td{padding:8px 4px;font-size:.85rem}
+  canvas{height:200px}
+  canvas.tall{height:180px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}

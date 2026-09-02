@@ -52,7 +52,7 @@ export function createChart(canvas) {
     // Two pens sitting symmetrically at +/- half a threshold are exactly that far apart, so a
     // fixed pair of rules reads correctly whichever quantity the run is being judged on.
     ctx.setLineDash([2, 4]);
-    ctx.font = '10px ui-sans-serif, -apple-system, "Segoe UI", sans-serif';
+    ctx.font = '12px ui-sans-serif, -apple-system, "Segoe UI", sans-serif';
     ctx.textAlign = 'right';
     for (const [level, name, text] of bands) {
       const half = level / 2;
@@ -74,7 +74,7 @@ export function createChart(canvas) {
       line(xx, 0, xx, h);
       if (!text) return;
       ctx.fillStyle = col;
-      ctx.font = '10px ui-sans-serif, -apple-system, "Segoe UI", sans-serif';
+      ctx.font = '12px ui-sans-serif, -apple-system, "Segoe UI", sans-serif';
       const flip = xx > w - ctx.measureText(text).width - 10;
       ctx.textAlign = flip ? 'right' : 'left';
       ctx.fillText(text, xx + (flip ? -4 : 4), 12);
@@ -85,8 +85,8 @@ export function createChart(canvas) {
     for (const rt of state.ruptures) rule(rt, colour('--rupture'), 'rupture');
     ctx.setLineDash([]);
 
-    pen(view, 'b', colour('--pen-b'));
-    pen(view, 'a', colour('--pen-a'));
+    pen(view, 'b', colour('--group-b'), [7, 4]);
+    pen(view, 'a', colour('--group-a'), []);
 
     function line(x1, y1, x2, y2) {
       ctx.beginPath();
@@ -95,17 +95,27 @@ export function createChart(canvas) {
       ctx.stroke();
     }
 
-    function pen(pts, key, col) {
+    // A is a solid line ending in a circle, B a dashed line ending in a diamond. The pens are
+    // told apart by shape and dash as well as colour.
+    function pen(pts, key, col, dash) {
       ctx.strokeStyle = col;
-      ctx.lineWidth = 1.7;
+      ctx.lineWidth = 2.6;
       ctx.lineJoin = 'round';
+      ctx.setLineDash(dash);
       ctx.beginPath();
       pts.forEach((p, i) => (i ? ctx.lineTo(x(i), y(val(p, key))) : ctx.moveTo(x(i), y(val(p, key)))));
       ctx.stroke();
+      ctx.setLineDash([]);
       const last = pts[pts.length - 1];
+      const cx = x(pts.length - 1), cy = y(val(last, key));
       ctx.fillStyle = col;
       ctx.beginPath();
-      ctx.arc(x(pts.length - 1), y(val(last, key)), 2.6, 0, Math.PI * 2);
+      if (key === 'b') {
+        ctx.moveTo(cx, cy - 4); ctx.lineTo(cx + 4, cy); ctx.lineTo(cx, cy + 4); ctx.lineTo(cx - 4, cy);
+        ctx.closePath();
+      } else {
+        ctx.arc(cx, cy, 3.6, 0, Math.PI * 2);
+      }
       ctx.fill();
     }
   }

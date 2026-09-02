@@ -10,6 +10,11 @@ described there, update the README in the same commit or don't make the change.
 - **`src/model.js` stays pure.** No DOM, no `requestAnimationFrame`, no bare `Math.random` —
   randomness comes in through the injected `rng` argument. This is what keeps the model
   testable, and every claim in the README is pinned by a test that relies on it.
+- **The palette lives in `styles.css` and nowhere else.** `chart.js` and `plot.js` read tokens
+  through `getComputedStyle`. Group A is a circle and a solid line, group B a diamond and a
+  dashed one, and the three stories add a square and a dotted line — **colour is never the only
+  encoding**, and `test/palette.test.js` fails the build if a retune breaks that, drops below
+  AA, lands in a party-coloured hue band, or puts functional text under 13px.
 - **`src/chart.js` and `src/plot.js` own no logic.** They read state and draw. Colours come
   from CSS variables via `getComputedStyle`, so the palette lives in `styles.css` only.
   Thresholds and ranges arrive as arguments; neither file imports a model constant.

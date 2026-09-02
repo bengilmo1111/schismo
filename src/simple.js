@@ -13,8 +13,11 @@ export const SIMPLE_UI = {
   pageTitle: 'The splitting game',
   introA:
     'Sometimes two people keep answering each other back. He does something, so she does ' +
-    'something, so he does something bigger. Two friends. Two teams. Two countries. Nobody ' +
-    'plans it. But bit by bit they end up far apart.',
+    'something, so he does something bigger. Bit by bit they end up far apart.',
+  introMore: 'Who does this happen to?',
+  introExamples:
+    'Two friends. Two teams. Two countries. Nobody plans it. Nobody wants it. It happens ' +
+    'anyway, just from answering each other back.',
   introB:
     'This page is a game about that. It starts with a question. You will probably get it ' +
     'wrong, and that is the best bit.',

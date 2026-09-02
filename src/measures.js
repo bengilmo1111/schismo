@@ -183,3 +183,25 @@ export function commonGround(state, bins = 48) {
   for (let k = 0; k < bins; k++) shared += Math.min(a[k] / na, b[k] / nb);
   return shared;
 }
+
+/**
+ * The span of trait values where both groups still have members — the region `commonGround`
+ * integrates over, handed back so a plot can draw it instead of leaving it implied. Returns
+ * null when the two no longer overlap anywhere.
+ */
+export function overlapRange(state, bins = 48) {
+  const { x, g, n } = state;
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < n; i++) { lo = Math.min(lo, x[i]); hi = Math.max(hi, x[i]); }
+  if (!(hi > lo)) return null;
+  const a = new Float64Array(bins), b = new Float64Array(bins);
+  for (let i = 0; i < n; i++) {
+    const k = Math.max(0, Math.min(bins - 1, Math.floor(((x[i] - lo) / (hi - lo)) * bins)));
+    (g[i] === 0 ? a : b)[k]++;
+  }
+  let first = -1, last = -1;
+  for (let k = 0; k < bins; k++) if (a[k] > 0 && b[k] > 0) { if (first < 0) first = k; last = k; }
+  if (first < 0) return null;
+  const w = (hi - lo) / bins;
+  return { lo: lo + first * w, hi: lo + (last + 1) * w };
+}

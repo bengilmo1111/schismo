@@ -2,6 +2,23 @@
 // draws them. Colours come from CSS variables; nothing here imports a model constant.
 
 const css = () => getComputedStyle(document.documentElement);
+
+/**
+ * Group A is a circle, group B is a diamond, everywhere. Colour alone fails for the common
+ * colour-vision deficiencies and in a monochrome screenshot; shape does not.
+ */
+function marker(ctx, x, y, r, shape) {
+  ctx.beginPath();
+  if (shape === 'diamond') {
+    ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y);
+    ctx.closePath();
+  } else if (shape === 'square') {
+    ctx.rect(x - r * 0.85, y - r * 0.85, r * 1.7, r * 1.7);
+  } else {
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+  }
+  ctx.fill();
+}
 const colour = name => css().getPropertyValue(name).trim();
 
 function fit(canvas) {
@@ -31,7 +48,7 @@ function grid(ctx, w, h, pad) {
  *   [{ points: number[], colour: '--pen-a', dim?: boolean, upTo?: number }]
  */
 export function createCurvePlot(canvas) {
-  const pad = { left: 30, right: 8, top: 10, bottom: 18 };
+  const pad = { left: 46, right: 10, top: 12, bottom: 24 };
 
   function draw(series, opts = {}) {
     const { ctx, w, h } = fit(canvas);
@@ -51,14 +68,14 @@ export function createCurvePlot(canvas) {
       ctx.setLineDash([]);
       if (opts.markLabel) {
         ctx.fillStyle = colour('--reached');
-        ctx.font = '10px ui-sans-serif, -apple-system, sans-serif';
+        ctx.font = '12px ui-sans-serif, -apple-system, sans-serif';
         ctx.textAlign = X(opts.markT) > w * 0.6 ? 'right' : 'left';
         ctx.fillText(opts.markLabel, X(opts.markT) + (X(opts.markT) > w * 0.6 ? -4 : 4), pad.top + 10);
       }
     }
 
-    ctx.font = '10px ui-sans-serif, -apple-system, sans-serif';
-    ctx.fillStyle = colour('--ink-soft');
+    ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.fillStyle = colour('--on-plot-soft');
     ctx.textAlign = 'right';
     for (let k = 0; k <= 4; k++) {
       const v = (maxY * (4 - k)) / 4;
@@ -71,15 +88,17 @@ export function createCurvePlot(canvas) {
       const upTo = s.upTo === undefined ? s.points.length - 1 : Math.min(s.upTo, s.points.length - 1);
       if (upTo < 0) continue;
       ctx.strokeStyle = colour(s.colour);
-      ctx.globalAlpha = s.dim ? 0.28 : 1;
-      ctx.lineWidth = s.dim ? 1 : 2;
+      ctx.globalAlpha = s.dim ? 0.32 : 1;
+      ctx.lineWidth = s.dim ? 1.4 : 3;
       ctx.lineJoin = 'round';
+      ctx.setLineDash(s.dash || []);
       ctx.beginPath();
       for (let t = 0; t <= upTo; t++) (t ? ctx.lineTo(X(t), Y(s.points[t])) : ctx.moveTo(X(0), Y(s.points[0])));
       ctx.stroke();
+      ctx.setLineDash([]);
       if (!s.dim) {
         ctx.fillStyle = colour(s.colour);
-        ctx.beginPath(); ctx.arc(X(upTo), Y(s.points[upTo]), 2.8, 0, Math.PI * 2); ctx.fill();
+        marker(ctx, X(upTo), Y(s.points[upTo]), 4.2, s.shape || 'circle');
       }
       ctx.globalAlpha = 1;
     }
@@ -122,13 +141,15 @@ export function createRibbonPlot(canvas) {
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, Math.round(Y(0)) + 0.5); ctx.lineTo(w, Math.round(Y(0)) + 0.5); ctx.stroke();
 
-    for (const [key, col] of [['meanA', '--pen-a'], ['meanB', '--pen-b']]) {
+    for (const [key, col, dash] of [['meanA', '--group-a', []], ['meanB', '--group-b', [7, 4]]]) {
       ctx.strokeStyle = colour(col);
-      ctx.lineWidth = 1.8;
+      ctx.lineWidth = 2.6;
+      ctx.setLineDash(dash);
       ctx.beginPath();
       frames.forEach((f, i) => (i ? ctx.lineTo(i * cw, Y(f[key])) : ctx.moveTo(0, Y(f[key]))));
       ctx.stroke();
     }
+    ctx.setLineDash([]);
   }
   return { draw };
 }
@@ -147,9 +168,9 @@ export function createScatterPlot(canvas) {
     ctx.strokeStyle = colour('--grid-strong');
     ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(lim), Y(lim)); ctx.stroke();
     for (let i = 0; i < state.n; i++) {
-      ctx.fillStyle = colour(state.g[i] === 0 ? '--pen-a' : '--pen-b');
-      ctx.globalAlpha = 0.45;
-      ctx.beginPath(); ctx.arc(X(state.press[i]), Y(state.yieldd[i]), 2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = colour(state.g[i] === 0 ? '--group-a' : '--group-b');
+      ctx.globalAlpha = 0.6;
+      marker(ctx, X(state.press[i]), Y(state.yieldd[i]), 2.6, state.g[i] === 0 ? 'circle' : 'diamond');
     }
     ctx.globalAlpha = 1;
     ctx.fillStyle = colour('--ink-soft');
@@ -189,6 +210,25 @@ export function createPeoplePlot(canvas) {
     const X = v => w / 2 + Math.max(-1, Math.min(1, v / lim)) * (w / 2 - 8);
     const band = (g, i) => (g === 0 ? 6 + jitter(i) * (h / 2 - 12) : h / 2 + 6 + jitter(i) * (h / 2 - 12));
 
+    // Common ground drawn as a state of its own rather than left as the gap between the two
+    // crowds. Hatched as well as coloured, so it survives greyscale.
+    if (opts.band && opts.band.hi > opts.band.lo) {
+      const x0 = X(opts.band.lo), x1 = X(opts.band.hi);
+      ctx.fillStyle = colour('--shared');
+      ctx.globalAlpha = 0.13;
+      ctx.fillRect(x0, 0, x1 - x0, h);
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = colour('--shared');
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let d = -h; d < x1 - x0; d += 9) {
+        ctx.moveTo(x0 + d, h); ctx.lineTo(x0 + d + h, 0);
+      }
+      ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, x1 - x0, h); ctx.clip();
+      ctx.stroke(); ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
     ctx.strokeStyle = colour('--grid-strong');
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, Math.round(h / 2) + 0.5); ctx.lineTo(w, Math.round(h / 2) + 0.5); ctx.stroke();
@@ -198,9 +238,11 @@ export function createPeoplePlot(canvas) {
     // Ties that still reach across the boundary. Watching these thin out is what sorting is.
     if (opts.ties !== false) {
       const per = state.ties.length / state.n;
-      ctx.strokeStyle = colour('--grid-strong');
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = 0.6;
+      // Hundreds of overlapping threads stack into a solid mass on a dark board; keep them
+      // faint enough to read as threads rather than as a shape.
+      ctx.strokeStyle = colour('--on-plot-soft');
+      ctx.globalAlpha = 0.09;
+      ctx.lineWidth = 0.5;
       ctx.beginPath();
       for (let i = 0; i < state.n; i++) {
         for (let k = 0; k < per; k++) {
@@ -216,16 +258,15 @@ export function createPeoplePlot(canvas) {
 
     for (let i = 0; i < state.n; i++) {
       const fresh = state.entered && state.t - state.entered[i] < 6 && state.entered[i] > 0;
-      ctx.fillStyle = colour(state.g[i] === 0 ? '--pen-a' : '--pen-b');
-      ctx.globalAlpha = fresh ? 1 : 0.55;
-      ctx.beginPath();
-      ctx.arc(X(state.x[i]), band(state.g[i], i), fresh ? 3 : 2, 0, Math.PI * 2);
-      ctx.fill();
+      const a = state.g[i] === 0;
+      ctx.fillStyle = colour(a ? '--group-a' : '--group-b');
+      ctx.globalAlpha = fresh ? 1 : 0.7;
+      marker(ctx, X(state.x[i]), band(state.g[i], i), fresh ? 3.6 : 2.6, a ? 'circle' : 'diamond');
       if (fresh) {                       // a newcomer: somebody left and this is who replaced them
         ctx.globalAlpha = 1;
-        ctx.strokeStyle = colour('--reached');
-        ctx.lineWidth = 1.2;
-        ctx.beginPath(); ctx.arc(X(state.x[i]), band(state.g[i], i), 5, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = colour('--action');
+        ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(X(state.x[i]), band(state.g[i], i), 6, 0, Math.PI * 2); ctx.stroke();
       }
     }
     ctx.globalAlpha = 1;

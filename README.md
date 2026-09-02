@@ -14,7 +14,7 @@ No build step, no dependencies. Open it, or serve it and open it.
 
 ```bash
 npm run dev     # serves on :5173
-npm test        # 50 tests over the pure models and the copy
+npm test        # 57 tests over the models, the copy and the palette
 ```
 
 `index.html` loads ES modules, so `file://` will not work — use the dev server or any
@@ -45,11 +45,12 @@ adding a single undifferentiated “polarization” slider.
 ## The four acts
 
 1. **What made this happen?** One curve, three plain-language answers, and a reveal that all
-   three produce it. The answer locks once given — being able to click all three until one
-   said "you were right" made the reveal's own copy false. Acts 2 to 4 stay closed until you
-   answer, so nobody scrolls past the question straight into a wall of sliders. The three runs share a starting population and were *fitted* to the same
-   curve; nothing makes them coincide on their own, and the app says so. This is §13.1's
-   equifinality — "the pattern is not the mechanism" — made concrete.
+   three produce it. The three runs share a starting population and were *fitted* to the same
+   curve; nothing makes them coincide on their own, and the app says so — this is §13.1's
+   equifinality, "the pattern is not the mechanism", made concrete. The answer locks once
+   given, and acts 2 to 4 stay closed until you answer: an unlocked question can be
+   brute-forced until it congratulates you, and an open laboratory means the next thing after
+   the question is fourteen sliders with jargon on them.
 2. **What would have told them apart.** The same three runs replayed **with the people left
    in** — 240 dots, banded by group, with the ties that still cross the boundary drawn
    underneath and newcomers ringed. The three mechanisms are obvious here and invisible in a
@@ -58,6 +59,10 @@ adding a single undifferentiated “polarization” slider.
    range the two still have in common — and then the full §11.7 panel, folded away.
 3. **Now try to stop it.** The same remedy applied to all three runs at a cycle you choose.
    The measured effects are below, and they are the reason the diagnosis matters.
+4. **The laboratory.** Every module on its own controls, on §18.1's normalised convention, with
+   a distribution ribbon, a role scatter, ghost traces from earlier seeds, and the original
+   dyad kept intact as the exactly solvable case.
+
 Every act has a second set of words. **Explain it simply** (top of the page, or `?simple=1`)
 swaps the whole page into a register aimed at a child: shorter sentences, plainer names for the
 three stories, no section references, larger type, and the laboratory folded away. It is an
@@ -67,9 +72,29 @@ the numbers and the charts are identical in both. `src/simple.js` holds every wo
 overclaiming, and the caveat that this is a pretend world has to survive into the simple
 register too, because §13.3 applies whoever is reading.
 
-4. **The laboratory.** Every module on its own controls, on §18.1's normalised convention, with
-   a distribution ribbon, a role scatter, ghost traces from earlier seeds, and the original
-   dyad kept intact as the exactly solvable case.
+## How it looks
+
+`docs/art-direction.md` proposes a visual language; phase 1 of it is implemented, with three
+amendments. The page is a set of bordered experiment bays on a mint ground, every chart is an
+instrument on a dark board, and the controls are physical rather than tinted.
+
+- **The groups are teal and amber, not coral and cobalt.** The direction forbids red/blue party
+  semantics and then specifies a red and a blue; colour does the signifying, so the pair had to
+  change. Teal and amber sit on the blue–yellow axis that the red–green deficiencies preserve.
+- **Colour is never the only encoding.** Group A is a circle and a solid line, group B a diamond
+  and a dashed one; the three stories add a square and a dotted line. This was a real defect —
+  the old build told the two groups apart by red versus blue and nothing else.
+- **Common ground is drawn**, as a hatched band where the two crowds still overlap, rather than
+  left as the space between them. Under sorting it stays wide while the averages part, which is
+  the sharpest thing the model has to say and was previously visible only as a number.
+- **One type stack, not three families.** `system-ui`, `ui-monospace` and no downloaded fonts,
+  against a repo whose first rule is no build step and no dependencies.
+- **A wide shell with a narrow reading column.** Bays get the room; prose keeps a 62ch measure.
+
+`test/palette.test.js` holds the palette to it: the group pair must not sit in a party-coloured
+hue band, must stay separable under simulated protanopia, deuteranopia and tritanopia, must
+separate in greyscale, marks must clear 3:1 on the dark board, every ink variant must clear AA
+on both light surfaces, and no functional text may resolve below 13px.
 
 ## The two patterns
 
